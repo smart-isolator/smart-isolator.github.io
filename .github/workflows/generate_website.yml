@@ -1,0 +1,15 @@
+name: Trigger Website Generation
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-website:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call generate-website endpoint
+        run: |
+          curl --fail "https://smart-isolator.fly.dev:8081/generate-website?token=${{ secrets.WEBSITE_TOKEN }}"
