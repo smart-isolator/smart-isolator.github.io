@@ -1,15 +1,42 @@
-name: Trigger Website Generation
+name: Trigger Website Generation and Pull
 
 on:
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 */4 * * *'  # Every 4 hours
   workflow_dispatch:
 
 jobs:
-  generate-website:
+  generate-and-pull:
     runs-on: ubuntu-latest
 
     steps:
       - name: Call generate-website endpoint
         run: |
           curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}"
+
+      - name: Checkout Pages repo
+        uses: actions/checkout@v4
+        with:
+          repository: smart-isolator/smart-isolator.github.io
+          token: ${{ secrets.GH_PAT }}
+          path: site
+
+      - name: Download website files from Fly.io
+        run: |
+          cd site
+          mkdir -p static/images
+
+          # Replace with your real hive topics
+          for id in c00002_d001 c00003_d004; do
+            curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o static/index_${id}.html
+            curl -f "https://smart-isolator.fly.dev/static/images/v001_${id}_1.svg" -o static/images/v001_${id}_1.svg
+          done
+
+      - name: Commit & push to GitHub Pages
+        run: |
+          cd site
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add .
+          git commit -m "Website update from Fly.io on $(date -u)" || echo "No changes to commit"
+          git push
