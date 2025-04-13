@@ -27,7 +27,7 @@ jobs:
           mkdir -p static/images
 
           # Replace with your real hive topics
-          for id in c00002_d001 c00003_d004; do
+          for id in c00001_d001 c00003_d001 c99999_d001; do
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o static/index_${id}.html
             curl -f "https://smart-isolator.fly.dev/static/images/v001_${id}_1.svg" -o static/images/v001_${id}_1.svg
           done
