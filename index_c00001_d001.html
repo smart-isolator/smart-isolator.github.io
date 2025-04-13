@@ -241,7 +241,7 @@
 					
 		            document.getElementById("status").textContent = "Connected to the hive!";
 		            console.log("Connected to MQTT Broker");
-		            client.subscribe("c00001_d001/answer", (err) => {
+		            client.subscribe("v001/c00001/d001/answer", (err) => {
 		                if (err) console.error("Subscribe error:", err);
 		            });
 		        });
@@ -270,7 +270,7 @@
 		            };
 		            const jsonString = JSON.stringify(jsonPayload);
 		            console.log("Sending:", jsonString);
-		            client.publish("c00001_d001/user", jsonString, (err) => {
+		            client.publish("v001/c00001/d001/user", jsonString, (err) => {
 		                if (err) console.error("Publish error:", err);
 		            });
 					
