@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Call generate-website endpoint
         run: |
-          curl --fail "https://smart-isolator.fly.dev:8080/generate-website?token=${{ secrets.WEBSITE_TOKEN }}"
+          curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}"
