@@ -24,12 +24,14 @@ jobs:
       - name: Download website files from Fly.io
         run: |
           cd site
+          mkdir -p images
+        
           for id in c00001_d001 c00002_d001 c00003_d001 c99999_d001; do
-            # Save HTML in root folder (or per hive folder)
-            curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html
-      
-            # Save SVG into images/ folder, without v001_ prefix
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_1.svg
+            # Try to download HTML
+            curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
+        
+            # Try to download SVG
+            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_1.svg || true
           done
 
       - name: Commit & push to GitHub Pages
