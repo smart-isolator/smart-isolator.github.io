@@ -241,7 +241,7 @@
 					
 		            document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
 		            console.log("Verbonden met de tussenman.");
-		            client.subscribe("v000/c00003/d001/answer", (err) => {
+		            client.subscribe("v000/c00003/d001/user", (err) => {
 		                if (err) console.error("Subscribe error:", err);
 		            });
 		        });
@@ -249,7 +249,7 @@
 				client.on("message", (topic, message) => {
 					// find the message timestamp
 					messageTime = new Date().getTime();
-					console.log(`Tijd van bericht is: ${messageTime}`);
+					console.log('Tijd van bericht is: ${messageTime}');
 					
 					// only display message when it is not from a previous interaction
 					if ((messageTime - connectionTime) < 2000 ) {
@@ -258,8 +258,8 @@
 					}
 					
 					//display the message 
-		            console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
-		            displayMessage(`${message.toString()}`);
+		            console.log('Ontvangen bericht op topic ${topic}: ${message.toString()}');
+		            displayMessage('${message.toString()}');
 		        });
  
 		        function publishMessage() {
