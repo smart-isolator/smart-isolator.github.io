@@ -241,7 +241,7 @@
 					
 		            document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
 		            console.log("Verbonden met de tussenman.");
-		            client.subscribe("v000/c00001/d001/user", (err) => {
+		            client.subscribe("v000/c00001/d001/answer", (err) => {
 		                if (err) console.error("Subscribe error:", err);
 		            });
 		        });
