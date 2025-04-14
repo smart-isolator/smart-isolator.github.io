@@ -32,10 +32,10 @@ jobs:
         
             # Try to download SVG
             curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_1.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_2.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_3.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_4.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_5.svg || true
+            curl -f "https://smart-isolator.fly.dev/static/images/${id}_2.svg" -o images/${id}_2.svg || true
+            curl -f "https://smart-isolator.fly.dev/static/images/${id}_3.svg" -o images/${id}_3.svg || true
+            curl -f "https://smart-isolator.fly.dev/static/images/${id}_4.svg" -o images/${id}_4.svg || true
+            curl -f "https://smart-isolator.fly.dev/static/images/${id}_5.svg" -o images/${id}_5.svg || true
           done
 
       - name: Commit & push to GitHub Pages

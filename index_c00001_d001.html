@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Understanding the Hive in: Bijenkast v001/c00001/d001</title>
+		<title>De bijenkast van binnen: Bijenkast v001/c00001/d001</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -18,7 +18,7 @@
 			<nav id="menu">
 				<ul class="links">
 					<li><a href=" https://smart-isolator.github.io/indexc00001_d001.html ">Home</a></li>
-					<li><a href="credits.html">Credits</a></li>
+					<li><a href="information.html">Informatie</a></li>
 				</ul>
 			</nav>
 
@@ -52,7 +52,7 @@
 					</div>
 				</article>
 				<article>
-					<img src="images/{hive_id}_4.jpg"  alt="" />
+					<img src="images/c00001_d001_4.jpg"  alt="" />
 					<div class="inner">
 						<header>
 							<p>...</p>
@@ -75,12 +75,12 @@
 			<section id="one" class="wrapper style3">
 				<div class="inner">
 					<header class="align-center">
-					    <p><strong>Status:</strong> <span id="status">Connecting...</span></p>
-					    <input type="text" id="message" placeholder="Ask your question to the beehive!">
-					    <button onclick="publishMessage()" id="theButton">Send</button>
+					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
+					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
+					    <button onclick="publishMessage()" id="theButton">Versturen</button>
 						<p id="llmStatus"></p>
 						<p id="waitingTime"></p>
-					    <h2>Received Messages:</h2>
+					    <h2>Ontvangen berichten:</h2>
 					    <ul id="messages"></ul>
 					</header>
 				</div>
@@ -105,7 +105,7 @@
 										<p>{introduction_apiary}</p>
 									</header>
 									<p>Temperatuur & licht</p>
-									<a href="https://smart-isolator.github.io/indexc00001_d001.html">Visit our homepage</a>
+									<a href="https://smart-isolator.github.io/indexc00001_d001.html">Bekijk de website</a>
 									<footer class="align-center">
 										<a href="#" class="button alt">TODO</a>
 									</footer>
@@ -132,7 +132,7 @@
 								<div class="content">
 									<header class="align-center">
 										<p>Het project </p>
-										<h2>Beehive Monitoring System Overview</h2>
+										<h2>Temperatuur</h2>
 									</header>
 									<p>{tech_story}</p>
 									<footer class="align-center">
@@ -149,8 +149,8 @@
 								</div>
 								<div class="content">
 									<header class="align-center">
-										<p>Data</p>
-										<h2>Temperature (against other hives)</h2>
+										<p>Meer text</p>
+										<h2>Meer data</h2>
 									</header>
 									<p>Bijen houden ook van mooi weer en een schoon huis</p>
 									<footer class="align-center">
@@ -215,15 +215,15 @@
 			<script src="assets/js/main.js"></script>
 			<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 		<script>
-		        const broker = "wss://uf07096f.ala.eu-central-1.emqxsl.com:8084/mqtt";
+		        const broker = "wss://k9931f8c.ala.eu-central-1.emqxsl.com:8084/mqtt";
 		        const clientId = "mqtt_test_client_" + Math.random().toString(16).substr(2, 8);
 		        const options = {
-				clientId: clientId,
-				clean: true,
-				connectTimeout: 4000,
-				username: "qr_code_user", // Add your EMQX username
+		            clientId: clientId,
+		            clean: true,
+		            connectTimeout: 4000,
+		            username: "qr_code_user", // Add your EMQX username
 			    password: "qr_code_password", // Add your EMQX password
-				cleanSession: true,
+					cleanSession: true,
 		        };
 				// create timer constants
 				let connectionTime;
@@ -239,8 +239,8 @@
 					connectionTime = new Date().getTime();
 					console.log(`Connection Time is: ${connectionTime}`);
 					
-		            document.getElementById("status").textContent = "Connected to the hive!";
-		            console.log("Connected to MQTT Broker");
+		            document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
+		            console.log("Verbonden met de tussenman.");
 		            client.subscribe("v001/c00001/d001/answer", (err) => {
 		                if (err) console.error("Subscribe error:", err);
 		            });
@@ -249,16 +249,16 @@
 				client.on("message", (topic, message) => {
 					// find the message timestamp
 					messageTime = new Date().getTime();
-					console.log(`Message Time is: ${messageTime}`);
+					console.log(`Tijd van bericht is: ${messageTime}`);
 					
 					// only display message when it is not from a previous interaction
 					if ((messageTime - connectionTime) < 2000 ) {
-						console.log('Message is from a previous interaction. Ignore!');
+						console.log('Bericht is van een eerder gesprek. Negeer het!');
 						return;
 					}
 					
 					//display the message 
-		            console.log(`Received message on topic ${topic}: ${message.toString()}`);
+		            console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
 		            displayMessage(`${message.toString()}`);
 		        });
  
@@ -279,7 +279,7 @@
 					waitingInterval = setInterval(updateWaitingTime, 1000);
 
 					// Show message that the question has been sent
-					document.getElementById('llmStatus').innerHTML = 'Question sent! Processing reply...';
+					document.getElementById('llmStatus').innerHTML = 'Vraag verstuurd! Verwerken van het antwoord...';
 					
 					//disable the button
 					document.getElementById("theButton").setAttribute('disabled','disabled');
@@ -293,8 +293,8 @@
 					document.getElementById("theButton").removeAttribute('disabled');
 					
 					//update status and waiting timer
-					document.getElementById('llmStatus').innerHTML = 'Answer received! You can now ask follow-up questions.';
-					document.getElementById('waitingTime').innerHTML = `Answer given in ${waitingTime} seconds`;
+					document.getElementById('llmStatus').innerHTML = 'Antwoord ontvangen! U kunt nu een vervolg vraag stellen.';
+					document.getElementById('waitingTime').innerHTML = `Antwoord gegeven in ${waitingTime} seconden`;
 
 		            const msgList = document.getElementById("messages");
 		            const newItem = document.createElement("li");
@@ -305,15 +305,15 @@
 				function updateWaitingTime() {
 					const currentTime = new Date().getTime();
 					waitingTime = Math.floor((currentTime - startTime) / 1000);
-					document.getElementById('waitingTime').innerHTML = `Processing Time: ${waitingTime} seconds`;
+					document.getElementById('waitingTime').innerHTML = `Verwerkingstijd: ${waitingTime} seconden`;
 					
 					//if more than 60 seconds have passed, give message about technical difficulties
 					if (waitingTime > 60) { 
 						//stop the interval checking
 						clearInterval(waitingInterval);
 						// give message about the technical issues
-						document.getElementById('llmStatus').innerHTML = 'Waitingtime too long. We might be experiencing technical issues';
-						document.getElementById('waitingTime').innerHTML = 'Limit of 60 seconds exceeded';
+						document.getElementById('llmStatus').innerHTML = 'Het duurde te lang. Mogelijk wegens een technisch probleem.';
+						document.getElementById('waitingTime').innerHTML = 'Duur van 60 seconden overschreden.';
 
 						//enable the button again
 						document.getElementById("theButton").removeAttribute('disabled');
