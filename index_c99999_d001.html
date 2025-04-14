@@ -241,7 +241,7 @@
 					
 		            document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
 		            console.log("Verbonden met de tussenman.");
-		            client.subscribe("v001/c99999/d001/answer", (err) => {
+		            client.subscribe("v000/c99999/d001/answer", (err) => {
 		                if (err) console.error("Subscribe error:", err);
 		            });
 		        });
@@ -270,7 +270,7 @@
 		            };
 		            const jsonString = JSON.stringify(jsonPayload);
 		            console.log("Sending:", jsonString);
-		            client.publish("v001/c99999/d001/user", jsonString, (err) => {
+		            client.publish("v000/c99999/d001/user", jsonString, (err) => {
 		                if (err) console.error("Publish error:", err);
 		            });
 					
