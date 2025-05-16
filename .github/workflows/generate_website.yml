@@ -26,7 +26,7 @@ jobs:
           cd site
           mkdir -p images
         
-          for id in c00001_d001 c00001_d011 c00001_d021 c00002_d001 c00003_d001 c99999_d001; do
+          for id in c00001_d001 c00001_d011 c00001_d021 c00001_d031 c00002_d001 c00003_d001 c99999_d001; do
             # Try to download HTML
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
         
