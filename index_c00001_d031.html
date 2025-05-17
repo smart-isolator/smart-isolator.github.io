@@ -301,24 +301,41 @@ Dit is de locatie waar het bijenmonitoring systeem het eerste live ging. Inmidde
 					document.getElementById('waitingTime').innerHTML = `Antwoord gegeven in ${waitingTime} seconden`;
 
 					const msgList = document.getElementById("messages");
-					const newItem = document.createElement("li");
-					// Add timestamp (client-side, when message is received)
+					const lastUserInput = document.getElementById("message").value;
 					const now = new Date();
 					const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-					newItem.textContent = `[${timeString}] ${msg}`;
-					// Prepend the new message to the top of the list
+
+					// Create a Q&A card
+					const card = document.createElement("div");
+					card.className = "qa-card";
+					card.innerHTML = `
+					  <div class="qa-header">${timeString}</div>
+					  <div class="qa-pair">
+					    <div class="qa-user"><strong>Jij:</strong> ${escapeHtml(lastUserInput)}</div>
+					    <div class="qa-assistant"><strong>Assistent:</strong> ${escapeHtml(msg)}</div>
+					  </div>
+					`;
+
+					// Prepend the new Q&A card to the top of the list
 					if (msgList.firstChild) {
-						msgList.insertBefore(newItem, msgList.firstChild);
+						msgList.insertBefore(card, msgList.firstChild);
 					} else {
-						msgList.appendChild(newItem);
+						msgList.appendChild(card);
 					}
 
 					// Add last Q&A to conversationHistory for memory (as role/content)
-					const lastUserInput = document.getElementById("message").value;
 					if (lastUserInput && msg) {
 						conversationHistory.push({ role: "user", content: lastUserInput });
 						conversationHistory.push({ role: "assistant", content: msg });
 					}
+				}
+
+				// Helper to escape HTML for safe display
+				function escapeHtml(text) {
+					if (!text) return '';
+					return text.replace(/[&<>"']/g, function (c) {
+						return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[c] || c;
+					});
 				}
 
 				function updateWaitingTime() {
