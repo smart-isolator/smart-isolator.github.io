@@ -267,6 +267,10 @@ Dit is de locatie waar het bijenmonitoring systeem het eerste live ging. Inmidde
 
 				function publishMessage() {
 					const userInput = document.getElementById("message").value;
+					if (userInput.length > 200) {
+						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
+						return;
+					}
 					const jsonPayload = {
 						category: "question",
 						cat_value: userInput
