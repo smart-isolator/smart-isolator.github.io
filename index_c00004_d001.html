@@ -235,6 +235,8 @@
 				let startTime;
 				let waitingInterval;
 
+				let conversationHistory = [];
+
 				const client = mqtt.connect(broker, options);
 
 				client.on("connect", () => {
@@ -269,9 +271,12 @@
 						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
 						return;
 					}
+					// Add previous Q&A to history (max 6 turns)
+					const historyToSend = conversationHistory.slice(-6);
 					const jsonPayload = {
 						category: "question",
-						cat_value: userInput
+						cat_value: userInput,
+						history: historyToSend
 					};
 					const jsonString = JSON.stringify(jsonPayload);
 					console.log("Sending:", jsonString);
@@ -304,6 +309,13 @@
 						msgList.insertBefore(newItem, msgList.firstChild);
 					} else {
 						msgList.appendChild(newItem);
+					}
+
+					// Add last Q&A to conversationHistory for memory (as role/content)
+					const lastUserInput = document.getElementById("message").value;
+					if (lastUserInput && msg) {
+						conversationHistory.push({ role: "user", content: lastUserInput });
+						conversationHistory.push({ role: "assistant", content: msg });
 					}
 				}
 
