@@ -295,8 +295,16 @@
 
 					const msgList = document.getElementById("messages");
 					const newItem = document.createElement("li");
-					newItem.textContent = msg;
-					msgList.appendChild(newItem);
+					// Add timestamp (client-side, when message is received)
+					const now = new Date();
+					const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+					newItem.textContent = `[${timeString}] ${msg}`;
+					// Prepend the new message to the top of the list
+					if (msgList.firstChild) {
+						msgList.insertBefore(newItem, msgList.firstChild);
+					} else {
+						msgList.appendChild(newItem);
+					}
 				}
 
 				function updateWaitingTime() {
