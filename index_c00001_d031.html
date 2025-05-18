@@ -274,11 +274,11 @@ Dit is de locatie waar het bijenmonitoring systeem het eerste live ging. Inmidde
 						return;
 					}
 					// Add previous Q&A to history (max 6 turns)
-					const historyToSend = conversationHistory.slice(-6);
+					const historyToSend = conversationHistory.slice(-6); // last 3 Q&A pairs
 					const jsonPayload = {
-						category: "question",
-						cat_value: userInput,
-						history: historyToSend
+					    category: "question",
+					    cat_value: userInput,
+					    history: historyToSend
 					};
 					const jsonString = JSON.stringify(jsonPayload);
 					console.log("Sending:", jsonString);
