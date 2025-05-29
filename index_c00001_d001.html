@@ -78,6 +78,10 @@
 			<section id="zero" class="wrapper style3">
 				<div class="inner">
 					<header class="align-center">
+						<div id="bee-advice-container" class="bee-advice-container" style="display:none;">
+					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
+					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
+					    </div>
 					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
 					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
 					    <button onclick="publishMessage()" id="theButton">Versturen</button>
@@ -90,6 +94,16 @@
 			</section>
  
 
+			<!-- Official website -->
+<section class="official-website-section">
+  <div class="official-website-container">
+    <h2 class="official-website-title">Wilt U ook een bijenkast van sensoren voorzien?</h2>
+    <p class="official-website-subtitle">Bekijk onze laagdrempelige oplossing:</p>
+    <a href="https://www.smart-isolator.eu" class="official-website-link" target="_blank" rel="noopener">
+      smart-isolator
+    </a>
+  </div>
+</section>
 
 
 
@@ -249,12 +263,26 @@
 						if (err) console.error("Subscribe error:", err);
 					});
 				});
+				// Subscribe to insights topic and display advice with bee
+					client.subscribe("v000/c00001/d001/hive_summary", (err) => {
+					    if (err) console.error("Subscribe error (hive_summary):", err);
+					});
 
 				client.on("message", (topic, message) => {
 					messageTime = new Date().getTime();
 					console.log(`Tijd van bericht is: ${messageTime}`);
 
-					// only display message when it is not from a previous interaction
+					// Show bee advice/insights if topic matches, always display retained message
+				    if (topic === "v000/c00001/d001/hive_summary") {
+				        const adviceContainer = document.getElementById("bee-advice-container");
+				        const adviceText = document.getElementById("bee-advice-text");
+				        adviceText.textContent = message.toString();
+				        adviceContainer.style.display = "flex";
+				        return;
+				    }
+
+				    // Only handle Q&A messages for the answer topic, and ignore early retained messages
+				    if (topic === "v000/c00001/d001/answer") {
 					if ((messageTime - connectionTime) < 2000) {
 						console.log("Bericht is van een eerder gesprek. Negeer het!");
 						return;
@@ -263,6 +291,7 @@
 					// display the message 
 					console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
 					displayMessage(`${message.toString()}`);
+					}
 				});
 
 				function publishMessage() {
