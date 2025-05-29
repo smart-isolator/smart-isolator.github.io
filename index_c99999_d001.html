@@ -78,18 +78,32 @@
 			<section id="zero" class="wrapper style3">
 				<div class="inner">
 					<header class="align-center">
+						<div id="bee-advice-container" class="bee-advice-container" style="display:none;">
+					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
+					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
+					    </div>
 					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
 					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
 					    <button onclick="publishMessage()" id="theButton">Versturen</button>
 						<p id="llmStatus"></p>
 						<p id="waitingTime"></p>
 					    <h2>Ontvangen berichten:</h2>
-					    <ul id="messages"></ul>
+					    <div id="messages"></div>
 					</header>
 				</div>
 			</section>
  
 
+			<!-- Official website -->
+<section class="official-website-section">
+  <div class="official-website-container">
+    <h2 class="official-website-title">Wilt U ook een bijenkast van sensoren voorzien?</h2>
+    <p class="official-website-subtitle">Bekijk onze laagdrempelige oplossing:</p>
+    <a href="https://www.smart-isolator.eu" class="official-website-link" target="_blank" rel="noopener">
+      smart-isolator
+    </a>
+  </div>
+</section>
 
 
 
@@ -235,6 +249,8 @@
 				let startTime;
 				let waitingInterval;
 
+				let conversationHistory = [];
+
 				const client = mqtt.connect(broker, options);
 
 				client.on("connect", () => {
@@ -247,12 +263,26 @@
 						if (err) console.error("Subscribe error:", err);
 					});
 				});
+				// Subscribe to insights topic and display advice with bee
+					client.subscribe("v000/c99999/d001/hive_summary", (err) => {
+					    if (err) console.error("Subscribe error (hive_summary):", err);
+					});
 
 				client.on("message", (topic, message) => {
 					messageTime = new Date().getTime();
 					console.log(`Tijd van bericht is: ${messageTime}`);
 
-					// only display message when it is not from a previous interaction
+					// Show bee advice/insights if topic matches, always display retained message
+				    if (topic === "v000/c99999/d001/hive_summary") {
+				        const adviceContainer = document.getElementById("bee-advice-container");
+				        const adviceText = document.getElementById("bee-advice-text");
+				        adviceText.textContent = message.toString();
+				        adviceContainer.style.display = "flex";
+				        return;
+				    }
+
+				    // Only handle Q&A messages for the answer topic, and ignore early retained messages
+				    if (topic === "v000/c99999/d001/answer") {
 					if ((messageTime - connectionTime) < 2000) {
 						console.log("Bericht is van een eerder gesprek. Negeer het!");
 						return;
@@ -261,13 +291,21 @@
 					// display the message 
 					console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
 					displayMessage(`${message.toString()}`);
+					}
 				});
 
 				function publishMessage() {
 					const userInput = document.getElementById("message").value;
+					if (userInput.length > 200) {
+						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
+						return;
+					}
+					// Add previous Q&A to history (max 6 turns)
+					const historyToSend = conversationHistory.slice(-6); // last 3 Q&A pairs
 					const jsonPayload = {
-						category: "question",
-						cat_value: userInput
+					    category: "question",
+					    cat_value: userInput,
+					    history: historyToSend
 					};
 					const jsonString = JSON.stringify(jsonPayload);
 					console.log("Sending:", jsonString);
@@ -290,9 +328,41 @@
 					document.getElementById('waitingTime').innerHTML = `Antwoord gegeven in ${waitingTime} seconden`;
 
 					const msgList = document.getElementById("messages");
-					const newItem = document.createElement("li");
-					newItem.textContent = msg;
-					msgList.appendChild(newItem);
+					const lastUserInput = document.getElementById("message").value;
+					const now = new Date();
+					const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+					// Create a Q&A card
+					const card = document.createElement("div");
+					card.className = "qa-card";
+					card.innerHTML = `
+					  <div class="qa-header">${timeString}</div>
+					  <div class="qa-pair">
+					    <div class="qa-user"><strong>Jij:</strong> ${escapeHtml(lastUserInput)}</div>
+					    <div class="qa-assistant"><strong>Assistent:</strong> ${escapeHtml(msg)}</div>
+					  </div>
+					`;
+
+					// Prepend the new Q&A card to the top of the list
+					if (msgList.firstChild) {
+						msgList.insertBefore(card, msgList.firstChild);
+					} else {
+						msgList.appendChild(card);
+					}
+
+					// Add last Q&A to conversationHistory for memory (as role/content)
+					if (lastUserInput && msg) {
+						conversationHistory.push({ role: "user", content: lastUserInput });
+						conversationHistory.push({ role: "assistant", content: msg });
+					}
+				}
+
+				// Helper to escape HTML for safe display
+				function escapeHtml(text) {
+					if (!text) return '';
+					return text.replace(/[&<>"']/g, function (c) {
+						return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[c] || c;
+					});
 				}
 
 				function updateWaitingTime() {
