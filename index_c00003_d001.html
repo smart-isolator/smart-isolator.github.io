@@ -11,6 +11,42 @@
 		<!-- Header -->
 			<header id="header" class="alt">
 				<div class="logo"><a href="index_c00003_d001.html"><span>Home</span></a></div>
+				<button id="honey-jar-btn" class="honey-jar-btn" style="display:none; white-space:normal; text-align:center; word-break:break-word;">n beschikbaar</button>
+				<div id="honey-order-modal" class="honey-order-modal" style="display:none;">
+				  <div class="honey-order-modal-content" style="max-height:90vh; overflow-y:auto;">
+				    <button class="honey-order-modal-close" id="honey-order-modal-close">&times;</button>
+				    <h2>Honing bestellen bij Imkersvereniging Den Haag e.o</h2>
+				    <p class="honey-info">Heerlijke lokale honing, direct van de imker!</p>
+				    <div id="honey-information" style="margin-bottom:0.7em; color:#ffd600; font-weight:500; display:none;"></div>
+				    <form id="honey-order-form">
+				      <label for="honey-amount">Aantal potten:</label>
+				      <input type="number" id="honey-amount" name="honey-amount" min="1" max="99" required>
+				      <div id="honey-total" style="margin-bottom:0.5em; color:#ffd600; font-weight:600;"></div>
+				      <label for="honey-delivery">Afleveroptie:</label>
+				      <select id="honey-delivery" name="honey-delivery">
+				        <option value="pickup">Afhalen bij de imker</option>
+				      </select>
+				      <div id="honey-address-fields" style="display:none; margin-top:0.5em;">
+				        <label for="honey-address">Adres:</label>
+				        <input type="text" id="honey-address" name="honey-address" maxlength="120">
+				        <label for="honey-postcode">Postcode:</label>
+				        <input type="text" id="honey-postcode" name="honey-postcode" maxlength="12">
+				        <label for="honey-city">Plaats:</label>
+				        <input type="text" id="honey-city" name="honey-city" maxlength="40">
+				      </div>
+				      <label for="honey-name">Naam (optioneel):</label>
+				      <input type="text" id="honey-name" name="honey-name" maxlength="60">
+				      <label for="honey-email">E-mail (optioneel):</label>
+				      <input type="email" id="honey-email" name="honey-email" maxlength="80">
+				      <button type="button" id="honey-order-review" class="honey-order-submit">Verder</button>
+				    </form>
+				    <div id="honey-order-review-summary" class="honey-order-review-summary" style="display:none;"></div>
+				    <div class="honey-order-disclaimer">
+				      Uw gegevens worden niet door ons opgeslagen, maar rechtstreeks doorgestuurd naar de imker. Wij verzorgen geen betaling — regel betaling en afhaling rechtstreeks met de imker. Wij zijn niet aansprakelijk voor foutieve informatie over de verkoop of voor eventuele problemen bij betaling of levering. Neem bij vragen of problemen contact met ons op.
+				    </div>
+				    <div id="honey-order-confirm" class="honey-order-confirm" style="display:none;"></div>
+				  </div>
+				</div>
 				<a href="#menu">Menu</a>
 			</header>
 
@@ -78,22 +114,22 @@
 			<section id="zero" class="wrapper style3">
 				<div class="inner">
 					<header class="align-center">
-						<div id="bee-advice-container" class="bee-advice-container" style="display:none;">
+					    <div id="bee-advice-container" class="bee-advice-container" style="display:none;">
 					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
 					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
 					    </div>
 					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
 					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
-					    <button onclick="publishMessage()" id="theButton">Versturen</button>
+					    <p class="disclaimer">Uw vraag wordt doorgestuurd naar een AI-model (ChatGPT). De vraag wordt geanonimiseerd opgeslagen voor analyse en verbetering. Vermijd het invullen van persoonlijke gegevens.</p>
+						<button onclick="publishMessage()" id="theButton">Versturen</button>
 						<p id="llmStatus"></p>
 						<p id="waitingTime"></p>
 					    <h2>Ontvangen berichten:</h2>
-					    <div id="messages"></div>
+					    <ul id="messages"></ul>
 					</header>
 				</div>
 			</section>
  
-
 			<!-- Official website -->
 <section class="official-website-section">
   <div class="official-website-container">
@@ -111,12 +147,8 @@
 			<section id="one" class="wrapper style2">
 				<div class="inner">
 					<header class="align-center">
-
-
-
 						<div>
 							<div class="box">
-								
 								<div class="content">
 									<header class="align-center">
 										<p>Imkersvereniging Den Haag en omstreken, gevestigd Leidsestraatweg 51, Den Haag</p>
@@ -129,12 +161,10 @@
 								</div>
 							</div>
 						</div>
-
-					</div>
+					</header>
 				</div>
 			</section>
  
-
 
 <!-- Two -->
 			<section id="two" class="wrapper style2">
@@ -248,7 +278,6 @@
 				let waitingTime;
 				let startTime;
 				let waitingInterval;
-
 				let conversationHistory = [];
 
 				const client = mqtt.connect(broker, options);
@@ -259,38 +288,61 @@
 
 					document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
 					console.log("Verbonden met de tussenman.");
-					client.subscribe("v000/c00003/d001/answer", (err) => {
-						if (err) console.error("Subscribe error:", err);
-					});
+					// Subscribe to unique answer topic for this client
+					client.subscribe(`v000/c00003/d001/answer/${clientId}`,(err)=>{if(err)console.error("Subscribe error (answer):",err);});
+					// Subscribe to insights topic and display advice with bee
+					client.subscribe("v000/c00003/d001/hive_summary",(err)=>{if(err)console.error("Subscribe error (hive_summary):",err);});
+					// Subscribe to honey availability topic
+					client.subscribe("v000/c00003/d001/honey_availability",(err)=>{if(err)console.error("Subscribe error (honey_availability):",err);});
 				});
-				// Subscribe to insights topic and display advice with bee
-					client.subscribe("v000/c00003/d001/hive_summary", (err) => {
-					    if (err) console.error("Subscribe error (hive_summary):", err);
-					});
 
 				client.on("message", (topic, message) => {
 					messageTime = new Date().getTime();
 					console.log(`Tijd van bericht is: ${messageTime}`);
 
-					// Show bee advice/insights if topic matches, always display retained message
-				    if (topic === "v000/c00003/d001/hive_summary") {
-				        const adviceContainer = document.getElementById("bee-advice-container");
-				        const adviceText = document.getElementById("bee-advice-text");
-				        adviceText.textContent = message.toString();
-				        adviceContainer.style.display = "flex";
-				        return;
-				    }
-
-				    // Only handle Q&A messages for the answer topic, and ignore early retained messages
-				    if (topic === "v000/c00003/d001/answer") {
-					if ((messageTime - connectionTime) < 2000) {
-						console.log("Bericht is van een eerder gesprek. Negeer het!");
-						return;
+					// Bee advice/insights if topic matches, always display retained message
+					if (topic === "v000/c00003/d001/hive_summary") {
+					    const adviceContainer = document.getElementById("bee-advice-container");
+					    const adviceText = document.getElementById("bee-advice-text");
+					    adviceText.textContent = message.toString();
+					    adviceContainer.style.display = "flex";
+					    return;
 					}
 
-					// display the message 
-					console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
-					displayMessage(`${message.toString()}`);
+					// Handle honey availability messages
+					if (topic === "v000/c00003/d001/honey_availability") {
+					    const btn = document.getElementById("honey-jar-btn");
+					    let data;
+					    try { data = JSON.parse(message.toString()); } catch (e) { btn.style.display = "none"; return; }
+					    const n = parseInt(data.amount, 10);
+					    const price = parseFloat(data.price);
+					    const weight = parseInt(data.weight, 10);
+					    const pickup = data.pickup === "yes";
+					    const delivery = data.delivery === "yes";
+					    // Store information as data attribute
+					    btn.setAttribute('data-honey-information', data.information || '');
+					    if (!isNaN(n) && n > 0 && !isNaN(price) && price > 0 && !isNaN(weight) && weight > 0) {
+					        btn.textContent = `${n} beschikbaar – €${price.toFixed(2)} per stuk (${weight}g)`;
+					        btn.setAttribute('data-honey-price', price);
+					        btn.setAttribute('data-honey-weight', weight);
+					        btn.setAttribute('data-honey-pickup', pickup ? 'yes' : 'no');
+					        btn.setAttribute('data-honey-delivery', delivery ? 'yes' : 'no');
+					        btn.style.display = "inline-block";
+					    } else {
+					        btn.style.display = "none";
+					    }
+					    return;
+					}
+
+					// Handle Q&A messages for the unique answer topic
+					if (topic === `v000/c00003/d001/answer/${clientId}`) {
+						if ((messageTime - connectionTime) < 2000) {
+							console.log("Bericht is van een eerder gesprek. Negeer het!");
+							return;
+						}
+						// display the message 
+						console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
+						displayMessage(`${message.toString()}`);
 					}
 				});
 
@@ -300,12 +352,13 @@
 						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
 						return;
 					}
-					// Add previous Q&A to history (max 6 turns)
-					const historyToSend = conversationHistory.slice(-6); // last 3 Q&A pairs
+					// previous Q&A to history (max 6 turns)
+					const historyToSend = conversationHistory.slice(-6); // 3 Q&A pairs
 					const jsonPayload = {
 					    category: "question",
 					    cat_value: userInput,
-					    history: historyToSend
+					    history: historyToSend,
+					    client_id: clientId
 					};
 					const jsonString = JSON.stringify(jsonPayload);
 					console.log("Sending:", jsonString);
@@ -343,7 +396,7 @@
 					  </div>
 					`;
 
-					// Prepend the new Q&A card to the top of the list
+					// Add the new Q&A card to the top of the list
 					if (msgList.firstChild) {
 						msgList.insertBefore(card, msgList.firstChild);
 					} else {
@@ -377,8 +430,195 @@
 						document.getElementById("theButton").removeAttribute('disabled');
 					}
 				}
-			</script>
 
+				// Modal logic for honey order
+				const honeyBtn = document.getElementById('honey-jar-btn');
+				const honeyModal = document.getElementById('honey-order-modal');
+				const honeyClose = document.getElementById('honey-order-modal-close');
+				const honeyForm = document.getElementById('honey-order-form');
+				const honeyConfirm = document.getElementById('honey-order-confirm');
+				const honeyReviewBtn = document.getElementById('honey-order-review');
+				const honeyReviewSummary = document.getElementById('honey-order-review-summary');
+
+				function updateDeliveryOptions() {
+				  const price = honeyBtn.getAttribute('data-honey-price');
+				  const pickup = honeyBtn.getAttribute('data-honey-pickup') === 'yes';
+				  const delivery = honeyBtn.getAttribute('data-honey-delivery') === 'yes';
+				  const deliverySelect = document.getElementById('honey-delivery');
+				  deliverySelect.innerHTML = '';
+				  if (pickup) {
+				    const opt = document.createElement('option');
+				    opt.value = 'pickup';
+				    opt.textContent = 'Afhalen bij de imker';
+				    deliverySelect.appendChild(opt);
+				  }
+				  if (delivery) {
+				    const opt = document.createElement('option');
+				    opt.value = 'delivery';
+				    opt.textContent = 'Bezorgen (adres invullen)';
+				    deliverySelect.appendChild(opt);
+				  }
+				}
+
+				function updateAddressFields() {
+				  let addressFields = document.getElementById('honey-address-fields');
+				  const deliverySelect = document.getElementById('honey-delivery');
+				  const nameInput = document.getElementById('honey-name');
+				  const emailInput = document.getElementById('honey-email');
+				  if (!addressFields) {
+				    addressFields = document.createElement('div');
+				    addressFields.id = 'honey-address-fields';
+				    addressFields.style.marginTop = '0.5em';
+				    addressFields.innerHTML = `
+				      <label for="honey-address">Adres:</label>
+				      <input type="text" id="honey-address" name="honey-address" maxlength="120" required>
+				      <label for="honey-postcode">Postcode:</label>
+				      <input type="text" id="honey-postcode" name="honey-postcode" maxlength="12" required>
+				      <label for="honey-city">Plaats:</label>
+				      <input type="text" id="honey-city" name="honey-city" maxlength="40" required>
+				    `;
+				    const form = document.getElementById('honey-order-form');
+				    form.insertBefore(addressFields, document.getElementById('honey-name'));
+				  }
+				  if (deliverySelect.value === 'delivery') {
+				    addressFields.style.display = 'block';
+				    addressFields.querySelectorAll('input').forEach(i => i.required = true);
+				    // name and email required for delivery
+				    if (nameInput) nameInput.required = true;
+				    if (emailInput) emailInput.required = true;
+				    // update labels to remove (optioneel)
+				    const nameLabel = document.querySelector('label[for="honey-name"]');
+				    const emailLabel = document.querySelector('label[for="honey-email"]');
+				    if (nameLabel) nameLabel.innerHTML = 'Naam:';
+				    if (emailLabel) emailLabel.innerHTML = 'E-mail:';
+				  } else {
+				    addressFields.style.display = 'none';
+				    addressFields.querySelectorAll('input').forEach(i => i.required = false);
+				    // name and email optional for pickup
+				    if (nameInput) nameInput.required = false;
+				    if (emailInput) emailInput.required = false;
+				    // restore (optioneel) in labels
+				    const nameLabel = document.querySelector('label[for="honey-name"]');
+				    const emailLabel = document.querySelector('label[for="honey-email"]');
+				    if (nameLabel) nameLabel.innerHTML = 'Naam (optioneel):';
+				    if (emailLabel) emailLabel.innerHTML = 'E-mail (optioneel):';
+				  }
+				}
+
+				if (honeyBtn) {
+				  honeyBtn.addEventListener('click', () => {
+				    // price and weight in modal if available
+				    const price = honeyBtn.getAttribute('data-honey-price');
+				    const weight = honeyBtn.getAttribute('data-honey-weight');
+				    const delivery = honeyBtn.getAttribute('data-honey-delivery') === 'yes';
+				    const priceInfo = document.querySelector('.honey-info');
+				    let infoText = '';
+				    if (price && priceInfo && weight) {
+				      infoText = `Heerlijke lokale honing, direct van de imker! Prijs: €${parseFloat(price).toFixed(2)} per pot (${weight}g).`;
+				      if (delivery) {
+				        infoText += '\nVerzendkosten indicatie: ca. €7 voor 1 pot (afhankelijk van adres en aantal)';
+				      }
+				      priceInfo.textContent = infoText;
+				    }
+				    // the information field from MQTT topic in a dedicated area
+				    const infoMsg = honeyBtn.getAttribute('data-honey-information') || '';
+				    let infoDiv = document.getElementById('honey-info-message');
+				    if (!infoDiv) {
+				      infoDiv = document.createElement('div');
+				      infoDiv.id = 'honey-info-message';
+				      infoDiv.style = 'margin-bottom:0.7em; color:#ffd600; font-weight:500;';
+				      honeyForm.parentNode.insertBefore(infoDiv, honeyForm);
+				    }
+				    infoDiv.textContent = infoMsg;
+				    // max attribute for amount input
+				    const amountInput = document.getElementById('honey-amount');
+				    const maxAmount = honeyBtn.textContent.match(/^(\d+)/);
+				    if (amountInput && maxAmount && maxAmount[1]) {
+				      amountInput.max = maxAmount[1];
+				    }
+				    updateDeliveryOptions();
+				    updateAddressFields();
+				    document.getElementById('honey-delivery').addEventListener('change', updateAddressFields);
+				    honeyModal.style.display = 'block';
+				    honeyConfirm.style.display = 'none';
+				    honeyForm.style.display = 'block';
+				    honeyReviewSummary.style.display = 'none';
+				    // reset total price display
+				    const total = document.getElementById('honey-total');
+				    if (total) total.textContent = '';
+				  });
+				}
+				if (honeyClose) {
+				  honeyClose.addEventListener('click', () => {
+				    honeyModal.style.display = 'none';
+				  });
+				}
+				window.addEventListener('click', (e) => {
+				  if (e.target === honeyModal) honeyModal.style.display = 'none';
+				});
+
+				honeyReviewBtn.addEventListener('click', function() {
+				  // gather form data
+				  const amount = parseInt(document.getElementById('honey-amount').value, 10);
+				  const delivery = document.getElementById('honey-delivery').value;
+				  const name = document.getElementById('honey-name').value;
+				  const email = document.getElementById('honey-email').value;
+				  const price = honeyBtn.getAttribute('data-honey-price');
+				  const weight = honeyBtn.getAttribute('data-honey-weight');
+				  let address = '', postcode = '', city = '';
+				  if (delivery === 'delivery') {
+				    address = document.getElementById('honey-address').value;
+				    postcode = document.getElementById('honey-postcode').value;
+				    city = document.getElementById('honey-city').value;
+				    if (!address || !postcode || !city) return;
+				  }
+				  if (!amount || amount < 1 || !price || !weight) return;
+				  const total = (amount * parseFloat(price)).toFixed(2);
+				  let summary = `<strong>Bevestig uw bestelling:</strong><br>`;
+				  summary += `Aantal potten: <strong>${amount}</strong><br>`;
+				  summary += `Prijs per pot: <strong>€${parseFloat(price).toFixed(2)}</strong><br>`;
+				  summary += `Gewicht per pot: <strong>${weight}g</strong><br>`;
+				  summary += `Totaal: <strong>€${total}</strong><br>`;
+				  summary += `Afleveroptie: <strong>${delivery === 'pickup' ? 'Afhalen bij de imker' : 'Bezorgen'}</strong><br>`;
+				  if (delivery === 'delivery') {
+				    summary += `Adres: <strong>${address}, ${postcode}, ${city}</strong><br>`;
+				  }
+				  if (name) summary += `Naam: <strong>${name}</strong><br>`;
+				  if (email) summary += `E-mail: <strong>${email}</strong><br>`;
+				  summary += `<button id='honey-order-confirm-btn'>Bestelling bevestigen</button>`;
+				  honeyReviewSummary.innerHTML = summary;
+				  honeyReviewSummary.style.display = 'block';
+				  honeyForm.style.display = 'none';
+				  honeyConfirm.style.display = 'none';
+				  // confirm button handler
+				  setTimeout(() => {
+				    const confirmBtn = document.getElementById('honey-order-confirm-btn');
+				    if (confirmBtn) {
+				      confirmBtn.onclick = function() {
+				        const order = { amount, delivery, name, email };
+				        if (delivery === 'delivery') {
+				          order.address = address;
+				          order.postcode = postcode;
+				          order.city = city;
+				        }
+				        order.weight = weight;
+				        client.publish('v000/c00003/d001/honey_order', JSON.stringify(order), (err) => {
+				          if (err) {
+				            honeyConfirm.textContent = 'Er is een fout opgetreden bij het versturen van uw bestelling. Probeer het later opnieuw.';
+				            honeyConfirm.style.color = '#e53935';
+				          } else {
+				            honeyConfirm.textContent = 'Uw bestelling is verstuurd naar de imker! U ontvangt spoedig een reactie.';
+				            honeyConfirm.style.color = '#388e3c';
+				            honeyForm.style.display = 'none';
+				            honeyReviewSummary.style.display = 'none';
+				          }
+				          honeyConfirm.style.display = 'block';
+				        });
+				      };
+				    }
+				  }, 100);
+				});
+			</script>
 
  
 	</body>
