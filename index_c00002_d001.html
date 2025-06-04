@@ -11,7 +11,9 @@
 		<!-- Header -->
 			<header id="header" class="alt">
 				<div class="logo"><a href="index_c00002_d001.html"><span>Home</span></a></div>
-				<button id="honey-jar-btn" class="honey-jar-btn" style="display:none; white-space:normal; text-align:center; word-break:break-word;">n beschikbaar</button>
+				<button id="honey-jar-btn" class="honey-jar-btn" style="display:none; white-space:normal; text-align:center; word-break:break-word; max-width: 260px; width: 100%; min-width: 160px; margin: 0 auto; line-height: 1.2; padding: 0.5em 0.7em; font-size: 1.1em;">
+          <span id="honey-jar-amount"></span><br><span id="honey-jar-details"></span>
+        </button>
 				<div id="honey-order-modal" class="honey-order-modal" style="display:none;">
 				  <div class="honey-order-modal-content" style="max-height:90vh; overflow-y:auto;">
 				    <button class="honey-order-modal-close" id="honey-order-modal-close">&times;</button>
@@ -311,27 +313,28 @@
 
 					// Handle honey availability messages
 					if (topic === "v000/c00002/d001/honey_availability") {
-					    const btn = document.getElementById("honey-jar-btn");
-					    let data;
-					    try { data = JSON.parse(message.toString()); } catch (e) { btn.style.display = "none"; return; }
-					    const n = parseInt(data.amount, 10);
-					    const price = parseFloat(data.price);
-					    const weight = parseInt(data.weight, 10);
-					    const pickup = data.pickup === "yes";
-					    const delivery = data.delivery === "yes";
-					    // Store information as data attribute
-					    btn.setAttribute('data-honey-information', data.information || '');
-					    if (!isNaN(n) && n > 0 && !isNaN(price) && price > 0 && !isNaN(weight) && weight > 0) {
-					        btn.textContent = `${n} beschikbaar – €${price.toFixed(2)} per stuk (${weight}g)`;
-					        btn.setAttribute('data-honey-price', price);
-					        btn.setAttribute('data-honey-weight', weight);
-					        btn.setAttribute('data-honey-pickup', pickup ? 'yes' : 'no');
-					        btn.setAttribute('data-honey-delivery', delivery ? 'yes' : 'no');
-					        btn.style.display = "inline-block";
-					    } else {
-					        btn.style.display = "none";
-					    }
-					    return;
+        const btn = document.getElementById("honey-jar-btn");
+        let data;
+        try { data = JSON.parse(message.toString()); } catch (e) { btn.style.display = "none"; return; }
+        const n = parseInt(data.amount, 10);
+        const price = parseFloat(data.price);
+        const weight = parseInt(data.weight, 10);
+        const pickup = data.pickup === "yes";
+        const delivery = data.delivery === "yes";
+        btn.setAttribute('data-honey-information', data.information || '');
+        if (!isNaN(n) && n > 0 && !isNaN(price) && price > 0 && !isNaN(weight) && weight > 0) {
+            // Two-line display
+            document.getElementById('honey-jar-amount').textContent = `${n} beschikbaar`;
+            document.getElementById('honey-jar-details').textContent = `€${price.toFixed(2)} per stuk (${weight}g)`;
+            btn.setAttribute('data-honey-price', price);
+            btn.setAttribute('data-honey-weight', weight);
+            btn.setAttribute('data-honey-pickup', pickup ? 'yes' : 'no');
+            btn.setAttribute('data-honey-delivery', delivery ? 'yes' : 'no');
+            btn.style.display = "inline-block";
+        } else {
+            btn.style.display = "none";
+        }
+        return;
 					}
 
 					// Handle Q&A messages for the unique answer topic
