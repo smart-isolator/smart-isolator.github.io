@@ -639,7 +639,7 @@
   // Adjust the URL to point to the correct JSON file on your GitHub Pages
   // Example: https://<username>.github.io/<repo>/hive_info/<hive_id>.json
   var hiveId = 'c00001_d021';
-  var jsonUrl = 'https://<username>.github.io/<repo>/hive_info/' + hiveId + '.json';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/hive_info_'  + hiveId + '.json';
   fetch(jsonUrl)
     .then(function(response) { return response.json(); })
     .then(function(data) {
