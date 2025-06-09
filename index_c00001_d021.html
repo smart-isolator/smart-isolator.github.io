@@ -629,9 +629,28 @@
   <p>
     Smart-Isolator controleert geplaatste inhoud, maar is niet verantwoordelijk voor de inhoud die door imkers wordt gepubliceerd.<br>
   </p>
-  <p>
+  <p id="goodbye-text">
     Bedankt voor het bezoek!
   </p>
 </footer>
+<script>
+// Fetch the hive info JSON from GitHub Pages and update the goodbye text
+(function() {
+  // Adjust the URL to point to the correct JSON file on your GitHub Pages
+  // Example: https://<username>.github.io/<repo>/hive_info/<hive_id>.json
+  var hiveId = 'c00001_d021';
+  var jsonUrl = 'https://<username>.github.io/<repo>/hive_info/' + hiveId + '.json';
+  fetch(jsonUrl)
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.goodbye_text) {
+        document.getElementById('goodbye-text').textContent = data.goodbye_text;
+      }
+    })
+    .catch(function(err) {
+      // If fetch fails, keep the default text
+    });
+})();
+</script>
 	</body>
 </html>
