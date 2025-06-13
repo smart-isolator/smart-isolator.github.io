@@ -639,7 +639,7 @@ Dit is de locatie waar het bijenmonitoring systeem het eerste live ging. Inmidde
 // Fetch the hive info JSON from GitHub Pages and update the banners and goodbye text
 (function() {
   var hiveId = 'c00001_d031';
-  var jsonUrl = 'https://smart-isolator.github.io/hive_info/hive_info_'  + hiveId + '.json';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
   fetch(jsonUrl)
     .then(function(response) { return response.json(); })
     .then(function(data) {
