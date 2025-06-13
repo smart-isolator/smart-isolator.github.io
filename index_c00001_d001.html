@@ -67,46 +67,46 @@
 		<!-- Banner -->
 			<section class="banner half">
 				<article>
-					<img src="images/c00001_d001_1.jpg" alt="" />
+					<img id="banner-img-1" src="images/c00001_d001_1.jpg" alt="" />
 					<div class="inner">
 						<header>
-							<p>Een bijen zwerm van 2024</p>
+							<p id="banner-text-1">Het bijenvolk</p>
 							<h2>Imkerij Overbosch</h2>
 						</header>
 					</div>
 				</article>
 				<article>
-					<img src="images/c00001_d001_2.jpg" alt="" />
+					<img id="banner-img-2" src="images/c00001_d001_2.jpg" alt="" />
 					<div class="inner">
 						<header>
-							<p>Soms hangen ze in de boom wel heel hoog</p>
+							<p id="banner-text-2">Het bijenvolk</p>
 							<h2>Imkerij Overbosch</h2>
 						</header>
 					</div>
 				</article>
 				<article>
-					<img src="images/c00001_d001_3.jpg"  alt="" />
+					<img id="banner-img-3" src="images/c00001_d001_3.jpg"  alt="" />
 					<div class="inner">
 						<header>
-							<p>Een zwerm is een ideale omstandigheid voor de imker om uit te breiden.</p>
+							<p id="banner-text-3">Het bijenvolk</p>
 							<h2>Imkerij Overbosch</h2>
 						</header>
 					</div>
 				</article>
 				<article>
-					<img src="images/c00001_d001_4.jpg"  alt="" />
+					<img id="banner-img-4" src="images/c00001_d001_4.jpg"  alt="" />
 					<div class="inner">
 						<header>
-							<p>Het zwermen zelf is ook een wonderlijk fenomeen</p>
+							<p id="banner-text-4">Het bijenvolk</p>
 							<h2>Imkerij Overbosch</h2>
 						</header>
 					</div>
 				</article>
 				<article>
-					<img src="images/c00001_d001_5.jpg"  alt="" />
+					<img id="banner-img-5" src="images/c00001_d001_5.jpg"  alt="" />
 					<div class="inner">
 						<header>
-							<p>De bijen kijken uit op een sloot en zitten lekker beschut.</p>
+							<p id="banner-text-5">Het bijenvolk</p>
 							<h2>Imkerij Overbosch</h2>
 						</header>
 					</div>
@@ -634,15 +634,18 @@
   </p>
 </footer>
 <script>
-// Fetch the hive info JSON from GitHub Pages and update the goodbye text
+// Fetch the hive info JSON from GitHub Pages and update the banners and goodbye text
 (function() {
-  // Adjust the URL to point to the correct JSON file on your GitHub Pages
-  // Example: https://<username>.github.io/<repo>/hive_info/<hive_id>.json
   var hiveId = 'c00001_d001';
   var jsonUrl = 'https://smart-isolator.github.io/hive_info/hive_info_'  + hiveId + '.json';
   fetch(jsonUrl)
     .then(function(response) { return response.json(); })
     .then(function(data) {
+      for (var i = 1; i <= 5; i++) {
+        var bannerText = data['banner' + i] || 'Het bijenvolk';
+        var el = document.getElementById('banner-text-' + i);
+        if (el) el.textContent = bannerText;
+      }
       if (data.goodbye_text) {
         document.getElementById('goodbye-text').textContent = data.goodbye_text;
       }
