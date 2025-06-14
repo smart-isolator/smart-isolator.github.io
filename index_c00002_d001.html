@@ -198,7 +198,7 @@
           <div style="display: flex; flex-direction: column; gap: 0;">
             <div style="margin:0; padding:0.1em 0;"><strong>Naam imker:</strong> <span id="naam-imker">Onbekend</span></div>
             <div style="margin:0; padding:0.1em 0;"><strong>Plaats:</strong> <span id="plaats">Onbekend</span></div>
-            <div style="margin:0; padding:0.1em 0;"><strong>Website:</strong> <span id="website-link"><a href="#" target="_blank" rel="noopener" id="website">Geen website</a></span></div>
+            <div style="margin:0; padding:0.1em 0;"><strong>Website:</strong> <span id="website-link">Geen website</span></div>
             <div style="margin:0; padding:0.1em 0;"><strong>Contact:</strong> <span id="contact-gegevens">Geen contactgegevens</span></div>
           </div>
         </div>
@@ -770,6 +770,28 @@
       setTimeout(updateHoneyTitle, 600);
     });
   }
+})();
+</script>
+<script>
+(function() {
+  var hiveId = 'c00002_d001';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
+  fetch(jsonUrl)
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      // Update website link text and href dynamically
+      var websiteSpan = document.getElementById('website-link');
+      if (websiteSpan) {
+        if (data.website && data.website.trim() && data.website !== 'Geen website') {
+          websiteSpan.innerHTML = '<a href="' + data.website + '" target="_blank" rel="noopener">Link</a>';
+        } else {
+          websiteSpan.textContent = 'Geen website';
+        }
+      }
+    })
+    .catch(function(err) {
+      // If fetch fails, keep the default text
+    });
 })();
 </script>
 	</body>
