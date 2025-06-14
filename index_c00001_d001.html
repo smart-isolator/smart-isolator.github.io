@@ -65,53 +65,53 @@
 			</nav>
 
 		<!-- Banner Section -->
-			<section class="banner half">
-				<article>
-					<img id="banner-img-1" src="images/c00001_d001_1.jpg" alt="" />
-					<div class="inner">
-						<header>
-							<p id="banner-text-1">Het bijenvolk</p>
-							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
-						</header>
-					</div>
-				</article>
-				<article>
-					<img id="banner-img-2" src="images/c00001_d001_2.jpg" alt="" />
-					<div class="inner">
-						<header>
-							<p id="banner-text-2">Het bijenvolk</p>
-							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
-						</header>
-					</div>
-				</article>
-				<article>
-					<img id="banner-img-3" src="images/c00001_d001_3.jpg" alt="" />
-					<div class="inner">
-						<header>
-							<p id="banner-text-3">Het bijenvolk</p>
-							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
-						</header>
-					</div>
-				</article>
-				<article>
-					<img id="banner-img-4" src="images/c00001_d001_4.jpg" alt="" />
-					<div class="inner">
-						<header>
-							<p id="banner-text-4">Het bijenvolk</p>
-							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
-						</header>
-					</div>
-				</article>
-				<article>
-					<img id="banner-img-5" src="images/c00001_d001_5.jpg" alt="" />
-					<div class="inner">
-						<header>
-							<p id="banner-text-5">Het bijenvolk</p>
-							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
-						</header>
-					</div>
-				</article>
-			</section>
+<section class="banner half">
+  <article>
+    <img id="banner-img-1" src="images/c00001_d001_1.jpg" alt="" />
+    <div class="inner">
+      <header>
+        <p id="banner-text-1">Het bijenvolk</p>
+        <h2 style="font-size:1.2em;">In de buiten lucht</h2>
+      </header>
+    </div>
+  </article>
+  <article>
+    <img id="banner-img-2" src="images/c00001_d001_2.jpg" alt="" />
+    <div class="inner">
+      <header>
+        <p id="banner-text-2">Het bijenvolk</p>
+        <h2 style="font-size:1.2em;">In de buiten lucht</h2>
+      </header>
+    </div>
+  </article>
+  <article>
+    <img id="banner-img-3" src="images/c00001_d001_3.jpg" alt="" />
+    <div class="inner">
+      <header>
+        <p id="banner-text-3">Het bijenvolk</p>
+        <h2 style="font-size:1.2em;">In de buiten lucht</h2>
+      </header>
+    </div>
+  </article>
+  <article>
+    <img id="banner-img-4" src="images/c00001_d001_4.jpg" alt="" />
+    <div class="inner">
+      <header>
+        <p id="banner-text-4">Het bijenvolk</p>
+        <h2 style="font-size:1.2em;">In de buiten lucht</h2>
+      </header>
+    </div>
+  </article>
+  <article>
+    <img id="banner-img-5" src="images/c00001_d001_5.jpg" alt="" />
+    <div class="inner">
+      <header>
+        <p id="banner-text-5">Het bijenvolk</p>
+        <h2 style="font-size:1.2em;">In de buiten lucht</h2>
+      </header>
+    </div>
+  </article>
+</section>
  
 <!-- Zero -->
 			<section id="zero" class="wrapper style3">
@@ -154,7 +154,7 @@
   </div>
 </section>
 
-<!-- Agenda Section (table) -->
+<!-- Agenda Section (table and fallback text) -->
 <section id="agenda" class="wrapper style2">
   <div class="inner">
     <header class="align-center">
@@ -169,6 +169,7 @@
             </thead>
             <tbody id="agenda-tbody"></tbody>
           </table>
+          <div id="agenda-fallback" style="display:none;">Geen agendapunten beschikbaar.</div>
         </div>
       </div>
     </header>
@@ -734,7 +735,9 @@
         }
       }
       var tbody = document.getElementById('agenda-tbody');
-      if (agenda.length > 0 && tbody) {
+      var table = document.getElementById('agenda-table');
+      var fallback = document.getElementById('agenda-fallback');
+      if (agenda.length > 0 && tbody && table) {
         tbody.innerHTML = '';
         agenda.forEach(function(item) {
           var tr = document.createElement('tr');
@@ -746,11 +749,19 @@
           tr.appendChild(tdText);
           tbody.appendChild(tr);
         });
-        document.getElementById('agenda-table').style.display = '';
+        table.style.display = '';
+        if (fallback) fallback.style.display = 'none';
+      } else if (fallback) {
+        if (table) table.style.display = 'none';
+        fallback.style.display = '';
       }
     })
     .catch(function(err) {
       // If fetch fails, keep the default text
+      var table = document.getElementById('agenda-table');
+      var fallback = document.getElementById('agenda-fallback');
+      if (table) table.style.display = 'none';
+      if (fallback) fallback.style.display = '';
     });
 })();
 </script>
