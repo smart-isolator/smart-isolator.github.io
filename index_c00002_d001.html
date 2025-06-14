@@ -1,11 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>De bijenkast van binnen: Bijenkast v001/c00002/d001</title>
+		<title>De bijenkast van binnen</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="honey-fix.css" />
 	</head>
 	<body>
 
@@ -19,7 +18,7 @@
 				<div id="honey-order-modal" class="honey-order-modal" style="display:none;">
 				  <div class="honey-order-modal-content" style="max-height:90vh; overflow-y:auto;">
 				    <button class="honey-order-modal-close" id="honey-order-modal-close">&times;</button>
-				    <h2>Honing bestellen bij Bijenkast v001/c00002/d001</h2>
+				    <h2 id="honey-order-title">Honing bestellen bij de imker</h2>
 				    <p class="honey-info">Heerlijke lokale honing, direct van de imker!</p>
 				    <div id="honey-information" style="margin-bottom:0.7em; color:#ffd600; font-weight:500; display:none;"></div>
 				    <form id="honey-order-form">
@@ -223,10 +222,10 @@
 								</div>
 								<div class="content">
 									<header class="align-center">
-										<p>Het project </p>
+										<p>Het constant meten en weten! </p>
 										<h2>Temperatuur</h2>
 									</header>
-									<p>Educatie & Informatievoorziening</p>
+									<p>Bekijk de sensor data binnen in de kast van de afgelopen drie dagen.</p>
 									<!-- <footer class="align-center">
 										<a href="#" class="button alt">TODO</a>
 									</footer> -->
@@ -241,8 +240,8 @@
 								</div>
 								<div class="content">
 									<header class="align-center">
-										<p>Meer text</p>
-										<h2>Meer data</h2>
+										<p>We vergelijken verschillende kasten met elkaar</p>
+										<h2>Rel. luchtvochtigheid.</h2>
 									</header>
 									<p>Bijen houden ook van mooi weer en een schoon huis</p>
 									<!-- <footer class="align-center">
@@ -270,7 +269,7 @@
 			<section id="five" class="wrapper style2">
 				<div class="inner">
 					<header class="align-center">
-						<p class="special">(relatieve) luchtvochtigheid, licht, (relatieve) luchtdruk, Temperatuur verschil binnen en buiten de kast en CO2 in de kast.</p>
+						<p class="special">Licht intensiteit, (relatieve) luchtvochtigheid, (relatieve) luchtdruk en CO2 in de kast.</p>
 						<h2>Alle grafieken</h2>
 					</header>
 					<div class="gallery">
@@ -368,7 +367,7 @@
         if (!isNaN(n) && n > 0 && !isNaN(price) && price > 0 && !isNaN(weight) && weight > 0) {
             // Two-line display
             document.getElementById('honey-jar-amount').textContent = `${n} beschikbaar`;
-            document.getElementById('honey-jar-details').textContent = `€${price.toFixed(2)} per stuk (${weight}g)`;
+            document.getElementById('honey-jar-details').textContent = `€${price.toFixed(2)} p.s. (${weight}g)`;
             btn.setAttribute('data-honey-price', price);
             btn.setAttribute('data-honey-weight', weight);
             btn.setAttribute('data-honey-pickup', pickup ? 'yes' : 'no');
@@ -734,6 +733,44 @@
     .catch(function(err) {
       // If fetch fails, keep the default text
     });
+})();
+</script>
+<script>
+// Dynamically update the page title to include the imker name from gegevens
+(function() {
+  var updateTitle = function() {
+    var naamImker = document.getElementById('naam-imker');
+    if (naamImker && naamImker.textContent.trim()) {
+      document.title = 'De bijenkast van binnen: ' + naamImker.textContent.trim();
+    }
+  };
+  // Run after gegevens are loaded
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(updateTitle, 500); // Wait for gegevens to be filled
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(updateTitle, 500);
+    });
+  }
+})();
+</script>
+<script>
+// Dynamically update the honey order modal title with the imker name
+(function() {
+  var updateHoneyTitle = function() {
+    var naamImker = document.getElementById('naam-imker');
+    var honeyTitle = document.getElementById('honey-order-title');
+    if (naamImker && naamImker.textContent.trim() && honeyTitle) {
+      honeyTitle.textContent = 'Honing bestellen bij ' + naamImker.textContent.trim();
+    }
+  };
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(updateHoneyTitle, 600); // Wait for gegevens to be filled
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(updateHoneyTitle, 600);
+    });
+  }
 })();
 </script>
 	</body>
