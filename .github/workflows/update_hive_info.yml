@@ -28,14 +28,12 @@ jobs:
         run: |
           cd site/hive_info
           for field in ${{ github.event.client_payload.image_fields }}; do
-            fname="${{ github.event.client_payload.user }}_${{ github.event.client_payload.hive }}_${field}"
-            for ext in jpg png jpeg webp svg gif; do
-              url="$FLY_API/static/hive_info/${fname}.$ext"
+              url="$FLY_API/static/hive_info/${field}"
               if curl -fsI "$url" >/dev/null; then
-                curl -fSL "$url" -o "$fname.$ext"
+                curl -fSL "$url" -o "$field"
                 # Move/copy to images directory
                 mkdir -p ../images
-                cp "$fname.$ext" ../images/
+                cp "$field" ../images/
                 break
               fi
             done
