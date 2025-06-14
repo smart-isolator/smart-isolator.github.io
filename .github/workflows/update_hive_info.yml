@@ -26,14 +26,11 @@ jobs:
       - name: Download updated images (if any)
         if: ${{ github.event.client_payload.image_fields && github.event.client_payload.image_fields != '' }}
         run: |
-          cd site/hive_info
+          cd site/images
           for field in ${{ github.event.client_payload.image_fields }}; do
               url="$FLY_API/static/hive_info/${field}"
               if curl -fsI "$url" >/dev/null; then
                 curl -fSL "$url" -o "$field"
-                # Move/copy to images directory
-                mkdir -p ../images
-                cp "$field" ../images/
                 break
               fi
             done
