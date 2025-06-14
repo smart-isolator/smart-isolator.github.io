@@ -37,7 +37,6 @@ jobs:
                 break
               fi
             done
-          done
 
       - name: Commit & push to GitHub Pages
         run: |
