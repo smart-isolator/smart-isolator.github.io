@@ -71,7 +71,7 @@
 					<div class="inner">
 						<header>
 							<p id="banner-text-1">Het bijenvolk</p>
-							<h2>Bijenkast v001/c00002/d001</h2>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
 						</header>
 					</div>
 				</article>
@@ -80,7 +80,7 @@
 					<div class="inner">
 						<header>
 							<p id="banner-text-2">Het bijenvolk</p>
-							<h2>Bijenkast v001/c00002/d001</h2>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
 						</header>
 					</div>
 				</article>
@@ -89,7 +89,7 @@
 					<div class="inner">
 						<header>
 							<p id="banner-text-3">Het bijenvolk</p>
-							<h2>Bijenkast v001/c00002/d001</h2>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
 						</header>
 					</div>
 				</article>
@@ -98,7 +98,7 @@
 					<div class="inner">
 						<header>
 							<p id="banner-text-4">Het bijenvolk</p>
-							<h2>Bijenkast v001/c00002/d001</h2>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
 						</header>
 					</div>
 				</article>
@@ -107,7 +107,7 @@
 					<div class="inner">
 						<header>
 							<p id="banner-text-5">Het bijenvolk</p>
-							<h2>Bijenkast v001/c00002/d001</h2>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
 						</header>
 					</div>
 				</article>
@@ -133,6 +133,74 @@
 				</div>
 			</section>
  
+
+<!-- min One -->
+<!-- Informatie Section -->
+<section id="informatie" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content">
+          <header class="align-center">
+            <h3>Informatie over de imkerij</h3>
+          </header>
+          <p id="introductie-imkerij">Welkom op onze imkerij</p>
+          <p id="promotie-aanbod">Er is geen informatie over het aanbod van verkoop en onleidingen.</p>
+          <p id="activiteiten-en-agenda">Wij verzorgen de bijen het hele jaar rond</p>
+          <p id="bezoekers-informatie">Vraag naar de mogelijkheden om ons te bezoeken</p>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+<!-- Agenda Section (conditionally rendered) -->
+<section id="agenda" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content">
+          <header class="align-center">
+            <h3>Agenda</h3>
+          </header>
+          <table id="agenda-table" class="agenda-table" style="margin: 0 auto; display: none;">
+            <thead>
+              <tr><th>Datum & Tijd</th><th>Omschrijving</th></tr>
+            </thead>
+            <tbody id="agenda-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+
+
+
+
+
+<script>
+// Dynamically fill the agenda table if any agenda items exist
+(function() {
+  var agenda = [];
+  if (agenda.length > 0) {
+    var tbody = document.getElementById('agenda-tbody');
+    agenda.forEach(function(item) {
+      var tr = document.createElement('tr');
+      var tdTime = document.createElement('td');
+      tdTime.textContent = item.time;
+      var tdText = document.createElement('td');
+      tdText.textContent = item.text;
+      tr.appendChild(tdTime);
+      tr.appendChild(tdText);
+      tbody.appendChild(tr);
+    });
+    document.getElementById('agenda-table').style.display = '';
+  }
+})();
+</script>
+
 			<!-- Official website -->
 <section class="official-website-section">
   <div class="official-website-container">
@@ -629,25 +697,64 @@
   <p>
     Smart-Isolator controleert geplaatste inhoud, maar is niet verantwoordelijk voor de inhoud die door imkers wordt gepubliceerd.<br>
   </p>
-  <p id="goodbye-text">
-    Bedankt voor het bezoek!
-  </p>
+  <p>Bedankt voor Uw bezoek</p>
 </footer>
 <script>
-// Fetch the hive info JSON from GitHub Pages and update the banners and goodbye text
+// Fetch the hive info JSON from GitHub Pages and update the banners, gegevens, informatie, agenda, and goodbye text
 (function() {
   var hiveId = 'c00002_d001';
   var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
   fetch(jsonUrl)
     .then(function(response) { return response.json(); })
     .then(function(data) {
+      // Banners
       for (var i = 1; i <= 5; i++) {
         var bannerText = data['banner' + i] || 'Het bijenvolk';
         var el = document.getElementById('banner-text-' + i);
         if (el) el.textContent = bannerText;
       }
-      if (data.goodbye_text) {
-        document.getElementById('goodbye-text').textContent = data.goodbye_text;
+      // Gegevens
+      if (data.naam_imker) document.getElementById('naam-imker').textContent = data.naam_imker;
+      if (data.plaats) {
+        document.getElementById('plaats').textContent = data.plaats;
+        // Also update all banner locations
+        var bannerLocs = document.querySelectorAll('h2');
+        for (var j = 0; j < bannerLocs.length; j++) {
+          if (bannerLocs[j].textContent === 'Bijenkast v001/c00002/d001' || bannerLocs[j].textContent === 'In de buiten lucht') {
+            bannerLocs[j].textContent = data.plaats;
+          }
+        }
+      }
+      if (data.website) document.getElementById('website').textContent = data.website;
+      if (data.contact_gegevens) document.getElementById('contact-gegevens').textContent = data.contact_gegevens;
+      // Informatie
+      if (data.introductie_imkerij) document.getElementById('introductie-imkerij').textContent = data.introductie_imkerij;
+      if (data.promotie_aanbod) document.getElementById('promotie-aanbod').textContent = data.promotie_aanbod;
+      if (data.activiteiten_en_agenda) document.getElementById('activiteiten-en-agenda').textContent = data.activiteiten_en_agenda;
+      if (data.bezoekers_informatie) document.getElementById('bezoekers-informatie').textContent = data.bezoekers_informatie;
+      // Agenda
+      var agenda = [];
+      for (var i = 1; i <= 5; i++) {
+        var text = data['agenda' + i + '_text'] || '';
+        var time = data['agenda' + i + '_time'] || '';
+        if (text && text.trim() && time && time.trim()) {
+          agenda.push({ text: text, time: time });
+        }
+      }
+      var tbody = document.getElementById('agenda-tbody');
+      if (agenda.length > 0 && tbody) {
+        tbody.innerHTML = '';
+        agenda.forEach(function(item) {
+          var tr = document.createElement('tr');
+          var tdTime = document.createElement('td');
+          tdTime.textContent = item.time;
+          var tdText = document.createElement('td');
+          tdText.textContent = item.text;
+          tr.appendChild(tdTime);
+          tr.appendChild(tdText);
+          tbody.appendChild(tr);
+        });
+        document.getElementById('agenda-table').style.display = '';
       }
     })
     .catch(function(err) {
