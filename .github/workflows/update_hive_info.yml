@@ -18,6 +18,7 @@ jobs:
           path: site
 
       - name: Download updated hive info JSON
+        if: ${{ github.event.client_payload.filename && github.event.client_payload.filename != '' }}
         run: |
           cd site/hive_info
           curl -fSL "$FLY_API/static/hive_info/${{ github.event.client_payload.filename }}" -o "${{ github.event.client_payload.filename }}"
