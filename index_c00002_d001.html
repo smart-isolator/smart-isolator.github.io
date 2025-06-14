@@ -154,7 +154,7 @@
   </div>
 </section>
 
-<!-- Agenda Section (conditionally rendered) -->
+<!-- Agenda Section (text only, not table) -->
 <section id="agenda" class="wrapper style2">
   <div class="inner">
     <header class="align-center">
@@ -163,43 +163,14 @@
           <header class="align-center">
             <h3>Agenda</h3>
           </header>
-          <table id="agenda-table" class="agenda-table" style="margin: 0 auto; display: none;">
-            <thead>
-              <tr><th>Datum & Tijd</th><th>Omschrijving</th></tr>
-            </thead>
-            <tbody id="agenda-tbody"></tbody>
-          </table>
+          
+            <p>Geen agendapunten beschikbaar.</p>
+          
         </div>
       </div>
     </header>
   </div>
 </section>
-
-
-
-
-
-
-<script>
-// Dynamically fill the agenda table if any agenda items exist
-(function() {
-  var agenda = [];
-  if (agenda.length > 0) {
-    var tbody = document.getElementById('agenda-tbody');
-    agenda.forEach(function(item) {
-      var tr = document.createElement('tr');
-      var tdTime = document.createElement('td');
-      tdTime.textContent = item.time;
-      var tdText = document.createElement('td');
-      tdText.textContent = item.text;
-      tr.appendChild(tdTime);
-      tr.appendChild(tdText);
-      tbody.appendChild(tr);
-    });
-    document.getElementById('agenda-table').style.display = '';
-  }
-})();
-</script>
 
 			<!-- Official website -->
 <section class="official-website-section">
