@@ -64,7 +64,7 @@
 				</ul>
 			</nav>
 
-		<!-- Banner -->
+		<!-- Banner Section -->
 			<section class="banner half">
 				<article>
 					<img id="banner-img-1" src="images/c00001_d001_1.jpg" alt="" />
@@ -85,7 +85,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-3" src="images/c00001_d001_3.jpg"  alt="" />
+					<img id="banner-img-3" src="images/c00001_d001_3.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-3">Het bijenvolk</p>
@@ -94,7 +94,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-4" src="images/c00001_d001_4.jpg"  alt="" />
+					<img id="banner-img-4" src="images/c00001_d001_4.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-4">Het bijenvolk</p>
@@ -103,7 +103,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-5" src="images/c00001_d001_5.jpg"  alt="" />
+					<img id="banner-img-5" src="images/c00001_d001_5.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-5">Het bijenvolk</p>
@@ -154,7 +154,7 @@
   </div>
 </section>
 
-<!-- Agenda Section (text only, not table) -->
+<!-- Agenda Section (table) -->
 <section id="agenda" class="wrapper style2">
   <div class="inner">
     <header class="align-center">
@@ -163,9 +163,31 @@
           <header class="align-center">
             <h3>Agenda</h3>
           </header>
-          
-            <p>Geen agendapunten beschikbaar.</p>
-          
+          <table id="agenda-table" class="agenda-table" style="margin: 0 auto; display: none;">
+            <thead>
+              <tr><th>Datum & Tijd</th><th>Omschrijving</th></tr>
+            </thead>
+            <tbody id="agenda-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+<!-- Gegevens Section -->
+<section id="gegevens" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content">
+          <header class="align-center">
+            <h3>Gegevens van de imkerij</h3>
+          </header>
+          <p><strong>Naam imker:</strong> <span id="naam-imker">Onbekend</span></p>
+          <p><strong>Plaats:</strong> <span id="plaats">Onbekend</span></p>
+          <p><strong>Website:</strong> <span id="website">Geen website</span></p>
+          <p><strong>Contact:</strong> <span id="contact-gegevens">Geen contactgegevens</span></p>
         </div>
       </div>
     </header>
@@ -671,7 +693,6 @@
   <p>Bedankt voor Uw bezoek</p>
 </footer>
 <script>
-// Fetch the hive info JSON from GitHub Pages and update the banners, gegevens, informatie, agenda, and goodbye text
 (function() {
   var hiveId = 'c00001_d001';
   var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
@@ -700,7 +721,7 @@
       if (data.contact_gegevens) document.getElementById('contact-gegevens').textContent = data.contact_gegevens;
       // Informatie
       if (data.introductie_imkerij) document.getElementById('introductie-imkerij').textContent = data.introductie_imkerij;
-      if (data.promotie_aanbod) document.getElementById('promotie-aanbod').textContent = data.promotie_aanbod;
+      if (data.promotie_aanbod) document.getElementById('promotie_aanbod').textContent = data.promotie_aanbod;
       if (data.activiteiten_en_agenda) document.getElementById('activiteiten-en-agenda').textContent = data.activiteiten_en_agenda;
       if (data.bezoekers_informatie) document.getElementById('bezoekers-informatie').textContent = data.bezoekers_informatie;
       // Agenda
