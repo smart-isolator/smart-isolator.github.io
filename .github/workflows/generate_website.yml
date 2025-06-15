@@ -40,10 +40,11 @@ jobs:
 
           done
 
-      - name: Download JSON file from Fly.io
+      - name: Download JSON and CSV files from Fly.io
         run: |
           cd site
           curl -f "https://smart-isolator.fly.dev/static/hive_data.json" -o hive_data.json || true
+          curl -f "https://smart-isolator.fly.dev/static/hive_data.csv" -o hive_data.csv || true
 
       - name: Commit & push to GitHub Pages
         run: |
@@ -51,4 +52,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add .
-          git commit -m "Website update from Fly.io on $(date -u)" || echo "No changes to
+          git commit -m "Website update from Fly.io on $(date -u)" || echo "No changes to commit"
+          git push
