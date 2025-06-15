@@ -38,13 +38,6 @@ jobs:
             curl -f "https://smart-isolator.fly.dev/static/images/${id}_5.svg" -o images/${id}_5.svg || true
             curl -f "https://smart-isolator.fly.dev/static/images/${id}_6.svg" -o images/${id}_6.svg || true
 
-            # JPGs from downloaded_images folder (added on Fly)
-            curl -f "https://smart-isolator.fly.dev/static/downloaded_images/${id}_1.jpg" -o images/${id}_1.jpg || true
-            curl -f "https://smart-isolator.fly.dev/static/downloaded_images/${id}_2.jpg" -o images/${id}_2.jpg || true
-            curl -f "https://smart-isolator.fly.dev/static/downloaded_images/${id}_3.jpg" -o images/${id}_3.jpg || true
-            curl -f "https://smart-isolator.fly.dev/static/downloaded_images/${id}_4.jpg" -o images/${id}_4.jpg || true
-            curl -f "https://smart-isolator.fly.dev/static/downloaded_images/${id}_5.jpg" -o images/${id}_5.jpg || true
-
           done
 
       - name: Commit & push to GitHub Pages
