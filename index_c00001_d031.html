@@ -833,7 +833,7 @@
       const response = await fetch(csvUrl);
       const csvText = await response.text();
       const rows = csvText.split("\n");
-      const headers = rows[0].split("\t");
+      const headers = rows[0].split(",");
       const hiveIndex = headers.indexOf(hiveId);
 
       if (hiveIndex === -1) {
