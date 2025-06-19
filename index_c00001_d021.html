@@ -844,14 +844,35 @@
       const hiveIndex = headers.indexOf(hiveId);
       const datetimeIndex = headers.indexOf("datetime");
 
+      console.log("Headers:", headers);
+      console.log("Hive Index:", hiveIndex);
+
       if (hiveIndex === -1 || datetimeIndex === -1) {
         console.error(`Hive ID ${hiveId} or datetime not found in CSV headers.`);
         return;
       }
 
-      const latestRow = rows[rows.length - 1].split(","); // Get the last row (latest data)
+      // Find the latest valid row
+      let latestRow;
+      for (let i = rows.length - 1; i > 0; i--) {
+        const row = rows[i].split(",");
+        if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
+          latestRow = row;
+          break;
+        }
+      }
+
+      console.log("Latest Row:", latestRow);
+
+      if (!latestRow) {
+        console.error("No valid rows found in CSV.");
+        return;
+      }
+
       const temperature = parseFloat(latestRow[hiveIndex]);
       const timestamp = latestRow[datetimeIndex];
+
+      console.log("Temperature Value:", temperature);
 
       if (!isNaN(temperature)) {
         const percentage = Math.min(Math.max((temperature / 50) * 100, 0), 100); // Scale temperature to percentage
