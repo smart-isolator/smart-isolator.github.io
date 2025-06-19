@@ -794,5 +794,69 @@
     });
 })();
 </script>
+<div class="thermometer-banner" style="position: absolute; top: 100px; left: 20px;">
+  <div class="thermometer">
+    <div id="thermometer-fluid" class="thermometer-fluid"></div>
+  </div>
+  <p id="thermometer-label" class="thermometer-label">Bijenvolk: c00001_d021</p>
+</div>
+
+<style>
+  .thermometer {
+    width: 30px;
+    height: 100px;
+    border: 2px solid #000;
+    border-radius: 15px;
+    position: relative;
+    background: #fff;
+  }
+  .thermometer-fluid {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background: red;
+    border-radius: 15px;
+  }
+  .thermometer-label {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+  }
+</style>
+
+<script>
+  async function updateThermometer() {
+    const hiveId = "c00001_d021_temp_hive"; // Use the hive ID parameter
+    const csvUrl = "https://smart-isolator.github.io/hive_info.csv"; // URL to the CSV file
+
+    try {
+      const response = await fetch(csvUrl);
+      const csvText = await response.text();
+      const rows = csvText.split("\n");
+      const headers = rows[0].split("\t");
+      const hiveIndex = headers.indexOf(hiveId);
+
+      if (hiveIndex === -1) {
+        console.error(`Hive ID ${hiveId} not found in CSV headers.`);
+        return;
+      }
+
+      const latestRow = rows[rows.length - 2].split("\t"); // Get the second-to-last row (latest data)
+      const temperature = parseFloat(latestRow[hiveIndex]);
+
+      if (!isNaN(temperature)) {
+        const percentage = Math.min(Math.max((temperature / 50) * 100, 0), 100); // Scale temperature to percentage
+        document.getElementById("thermometer-fluid").style.height = `${percentage}%`;
+        document.getElementById("thermometer-label").textContent = `Bijenvolk: ${temperature.toFixed(1)}°C`;
+      } else {
+        console.error("Invalid temperature value.");
+      }
+    } catch (error) {
+      console.error("Error fetching or processing CSV data:", error);
+    }
+  }
+
+  updateThermometer();
+</script>
 	</body>
 </html>
