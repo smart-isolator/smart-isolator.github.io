@@ -799,6 +799,7 @@
     <div id="thermometer-fluid" class="thermometer-fluid"></div>
   </div>
   <p id="thermometer-label" class="thermometer-label">Bijenvolk: c99999_d001</p>
+  <p id="thermometer-timestamp" class="thermometer-timestamp"></p>
 </div>
 
 <style>
@@ -822,32 +823,41 @@
     font-size: 14px;
     text-align: center;
   }
+  .thermometer-timestamp {
+    margin-top: 5px;
+    font-size: 12px;
+    text-align: center;
+    color: gray;
+  }
 </style>
 
 <script>
   async function updateThermometer() {
     const hiveId = "c99999_d001_temp_hive"; // Use the hive ID parameter
-    const csvUrl = "https://smart-isolator.github.io/hive_data.csv"; // URL to the CSV file
+    const csvUrl = "hive_data.csv"; // URL to the CSV file
 
     try {
       const response = await fetch(csvUrl);
       const csvText = await response.text();
-      const rows = csvText.split("\n");
-      const headers = rows[0].split(",");
+      const rows = csvText.split("\n").filter(row => row.trim() !== ""); // Remove empty rows
+      const headers = rows[0].split(","); // Use commas for CSV parsing
       const hiveIndex = headers.indexOf(hiveId);
+      const datetimeIndex = headers.indexOf("datetime");
 
-      if (hiveIndex === -1) {
-        console.error(`Hive ID ${hiveId} not found in CSV headers.`);
+      if (hiveIndex === -1 || datetimeIndex === -1) {
+        console.error(`Hive ID ${hiveId} or datetime not found in CSV headers.`);
         return;
       }
 
-      const latestRow = rows[rows.length - 2].split("\t"); // Get the second-to-last row (latest data)
+      const latestRow = rows[rows.length - 1].split(","); // Get the last row (latest data)
       const temperature = parseFloat(latestRow[hiveIndex]);
+      const timestamp = latestRow[datetimeIndex];
 
       if (!isNaN(temperature)) {
         const percentage = Math.min(Math.max((temperature / 50) * 100, 0), 100); // Scale temperature to percentage
         document.getElementById("thermometer-fluid").style.height = `${percentage}%`;
         document.getElementById("thermometer-label").textContent = `Bijenvolk: ${temperature.toFixed(1)}°C`;
+        document.getElementById("thermometer-timestamp").textContent = `Laatste meting: ${timestamp}`;
       } else {
         console.error("Invalid temperature value.");
       }
