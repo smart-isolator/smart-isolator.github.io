@@ -797,9 +797,8 @@
 <div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
   <div class="thermometer">
     <div id="thermometer-fluid" class="thermometer-fluid"></div>
+    <div id="thermometer-value" class="thermometer-value"></div>
   </div>
-  <p id="thermometer-label" class="thermometer-label">Bijenvolk: c00001_d031</p>
-  <p id="thermometer-timestamp" class="thermometer-timestamp"></p>
 </div>
 
 <style>
@@ -810,6 +809,11 @@
     border-radius: 15px;
     position: relative;
     background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 12px;
+    color: #000;
   }
   .thermometer-fluid {
     width: 100%;
@@ -818,16 +822,10 @@
     background: red;
     border-radius: 15px;
   }
-  .thermometer-label {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: center;
-  }
-  .thermometer-timestamp {
-    margin-top: 5px;
-    font-size: 12px;
-    text-align: center;
-    color: gray;
+  .thermometer-value {
+    position: absolute;
+    bottom: 10px;
+    font-weight: bold;
   }
 </style>
 
@@ -842,13 +840,12 @@
       const rows = csvText.split("\n").filter(row => row.trim() !== ""); // Remove empty rows
       const headers = rows[0].split(","); // Use commas for CSV parsing
       const hiveIndex = headers.indexOf(hiveId);
-      const datetimeIndex = headers.indexOf("datetime");
 
       console.log("Headers:", headers);
       console.log("Hive Index:", hiveIndex);
 
-      if (hiveIndex === -1 || datetimeIndex === -1) {
-        console.error(`Hive ID ${hiveId} or datetime not found in CSV headers.`);
+      if (hiveIndex === -1) {
+        console.error(`Hive ID ${hiveId} not found in CSV headers.`);
         return;
       }
 
@@ -870,15 +867,13 @@
       }
 
       const temperature = parseFloat(latestRow[hiveIndex]);
-      const timestamp = latestRow[datetimeIndex];
 
       console.log("Temperature Value:", temperature);
 
       if (!isNaN(temperature)) {
         const percentage = Math.min(Math.max((temperature / 50) * 100, 0), 100); // Scale temperature to percentage
         document.getElementById("thermometer-fluid").style.height = `${percentage}%`;
-        document.getElementById("thermometer-label").textContent = `Bijenvolk: ${temperature.toFixed(1)}°C`;
-        document.getElementById("thermometer-timestamp").textContent = `Laatste meting: ${timestamp}`;
+        document.getElementById("thermometer-value").textContent = `${temperature.toFixed(1)}°C`;
       } else {
         console.error("Invalid temperature value.");
       }
