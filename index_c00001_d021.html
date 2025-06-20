@@ -943,42 +943,40 @@ async function updateThermometer() {
 }
 updateThermometer();
 </script>
-<div class="humidity-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
-  <div class="humidity-droplet-svg">
-    <svg width="60" height="90" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-      <path d="M794.848 507.264c-0.672-2.656-2.016-5.056-3.776-7.04l-279.104-465.472-39.872 66.464 0.064 0-240.8 401.536c-0.608 0.992-1.088 2.016-1.44 3.104-27.52 48.64-42.08 103.616-42.08 159.232 0 178.72 145.408 324.128 324.16 324.128s324.128-145.408 324.128-324.128c0-55.072-14.272-109.504-41.28-157.824zM512.032 955.104c-159.904 0-290.048-130.112-290.048-290.016 0-50.688 13.536-100.832 39.104-144.992 0.48-0.832 0.864-1.664 1.184-2.528l249.696-416.416 249.664 416.352c0.32 0.896 0.736 1.76 1.248 2.592 25.6 44.16 39.104 94.304 39.104 144.992 0 159.936-130.112 290.016-290.016 290.016z" fill="none" stroke="black" stroke-width="2"/>
-      <clipPath id="droplet-clip">
-        <path d="M794.848 507.264c-0.672-2.656-2.016-5.056-3.776-7.04l-279.104-465.472-39.872 66.464 0.064 0-240.8 401.536c-0.608 0.992-1.088 2.016-1.44 3.104-27.52 48.64-42.08 103.616-42.08 159.232 0 178.72 145.408 324.128 324.16 324.128s324.128-145.408 324.128-324.128c0-55.072-14.272-109.504-41.28-157.824zM512.032 955.104c-159.904 0-290.048-130.112-290.048-290.016 0-50.688 13.536-100.832 39.104-144.992 0.48-0.832 0.864-1.664 1.184-2.528l249.696-416.416 249.664 416.352c0.32 0.896 0.736 1.76 1.248 2.592 25.6 44.16 39.104 94.304 39.104 144.992 0 159.936-130.112 290.016-290.016 290.016z"/>
-      </clipPath>
-      <rect id="humidity-fluid-rect" x="0" y="85" width="60" height="0" fill="blue" clip-path="url(#droplet-clip)"/>
-    </svg>
-  </div>
-  <div class="humidity-value-svg" id="humidity-value" style="text-align:center; font-weight:bold; margin-top:4px; background:rgba(255,255,255,0.6); padding:2px; border-radius:4px;">--%</div>
-</div>
-
 <div class="droplet-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
   <div class="droplet">
     <svg id="droplet-svg" viewBox="0 0 1024 1024" width="60" height="80" style="display: block;">
-      <!-- SVG outline path, black -->
-      <path d="M794.848 507.264c-0.672-2.656-2.016-5.056-3.776-7.04l-279.104-465.472-39.872 66.464 0.064 0-240.8 401.536c-0.608 0.992-1.088 2.016-1.44 3.104-27.52 48.64-42.08 103.616-42.08 159.232 0 178.72 145.408 324.128 324.16 324.128s324.128-145.408 324.128-324.128c0-55.072-14.272-109.504-41.28-157.824zM512.032 955.104c-159.904 0-290.048-130.112-290.048-290.016 0-50.688 13.536-100.832 39.104-144.992 0.48-0.832 0.864-1.664 1.184-2.528l249.696-416.416 249.664 416.352c0.32 0.896 0.736 1.76 1.248 2.592 25.6 44.16 39.104 94.304 39.104 144.992 0 159.936-130.112 290.016-290.016 290.016z"
-        fill="none" stroke="#111" stroke-width="24" />
-      <!-- Blue fill (dynamic, by JS) -->
-      <clipPath id="droplet-clip">
-        <path d="M794.848 507.264c-0.672-2.656-2.016-5.056-3.776-7.04l-279.104-465.472-39.872 66.464 0.064 0-240.8 401.536c-0.608 0.992-1.088 2.016-1.44 3.104-27.52 48.64-42.08 103.616-42.08 159.232 0 178.72 145.408 324.128 324.16 324.128s324.128-145.408 324.128-324.128c0-55.072-14.272-109.504-41.28-157.824zM512.032 955.104c-159.904 0-290.048-130.112-290.048-290.016 0-50.688 13.536-100.832 39.104-144.992 0.48-0.832 0.864-1.664 1.184-2.528l249.696-416.416 249.664 416.352c0.32 0.896 0.736 1.76 1.248 2.592 25.6 44.16 39.104 94.304 39.104 144.992 0 159.936-130.112 290.016-290.016 290.016z" />
-      </clipPath>
+      <!-- One single closed path for outline and clip -->
+      <defs>
+        <clipPath id="droplet-clip">
+          <path id="droplet-shape"
+                d="M512,34
+                  C512,34 189,519 189,691
+                  C189,860 341,990 512,990
+                  C683,990 835,860 835,691
+                  C835,519 512,34 512,34
+                  Z"/>
+        </clipPath>
+      </defs>
+      <!-- Fill shape -->
       <rect id="droplet-fill" x="0" y="0" width="1024" height="1024"
-        fill="#2196f3" clip-path="url(#droplet-clip)" />
-      <!-- 50% bar indicator -->
-      <line id="droplet-bar" x1="150" x2="874" y1="0" y2="0" stroke="#228B22" stroke-width="18" stroke-dasharray="18,12" />
+            fill="#2196f3" clip-path="url(#droplet-clip)" />
+      <!-- Droplet outline (black) -->
+      <path d="M512,34
+                C512,34 189,519 189,691
+                C189,860 341,990 512,990
+                C683,990 835,860 835,691
+                C835,519 512,34 512,34
+                Z"
+            fill="none" stroke="#111" stroke-width="24"/>
+      <!-- 50% bar -->
+      <line id="droplet-bar" x1="250" x2="774" y1="0" y2="0" stroke="#228B22" stroke-width="18" stroke-dasharray="18,12" />
     </svg>
     <div id="droplet-value" class="droplet-value"></div>
   </div>
 </div>
 
 <style>
-.droplet-banner {
-  /* Right side of screen */
-}
 .droplet {
   display: flex;
   flex-direction: column;
@@ -1028,20 +1026,19 @@ async function updateDroplet() {
     if (!latestRow) return;
 
     const humidity = parseFloat(latestRow[hiveIndex]);
-    // SVG viewport is 1024 high, so we can fill from bottom up
     let percent = Math.min(Math.max((humidity - minHum) / (maxHum - minHum), 0), 1);
     let fillHeight = Math.round(percent * 1024);
 
-    // Move the rect upward so only the lower % is visible
+    // Fill rect
     document.getElementById("droplet-fill").setAttribute("y", 1024 - fillHeight);
     document.getElementById("droplet-fill").setAttribute("height", fillHeight);
 
-    // Position the 50% bar (in SVG coordinates, y from top)
+    // 50% bar
     const barY = 1024 - Math.round(barPercent * 1024);
     document.getElementById("droplet-bar").setAttribute("y1", barY);
     document.getElementById("droplet-bar").setAttribute("y2", barY);
 
-    // Show value under the droplet
+    // Only one value box
     document.getElementById("droplet-value").textContent = `${humidity.toFixed(1)}%`;
 
   } catch (error) {
@@ -1049,6 +1046,7 @@ async function updateDroplet() {
   }
 }
 updateDroplet();
+
 </script>
 
 	</body>
