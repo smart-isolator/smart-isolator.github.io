@@ -796,12 +796,12 @@
 </script>
 <div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
   <div class="thermometer">
-    <div class="thermometer-bulb">
-      <div id="thermometer-fluid-bulb" class="thermometer-fluid-bulb"></div>
-    </div>
     <div class="thermometer-tube">
       <div id="thermometer-fluid-tube" class="thermometer-fluid-tube"></div>
       <div id="thermometer-goal" class="thermometer-goal"></div>
+    </div>
+    <div class="thermometer-bulb">
+      <div id="thermometer-fluid-bulb" class="thermometer-fluid-bulb"></div>
     </div>
     <div id="thermometer-value" class="thermometer-value"></div>
   </div>
@@ -810,33 +810,10 @@
 <style>
 .thermometer {
   width: 40px;
-  height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-}
-
-.thermometer-bulb {
-  width: 40px;
-  height: 40px;
-  background: #fff;
-  border: 2px solid #000;
-  border-radius: 50%;
-  position: relative;
-  z-index: 2;
-  margin-bottom: -8px;
-  overflow: hidden;
-}
-
-.thermometer-fluid-bulb {
-  position: absolute;
-  left: 0; bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: red;
-  border-radius: 50%;
-  z-index: 1;
 }
 
 .thermometer-tube {
@@ -846,8 +823,8 @@
   border: 2px solid #000;
   border-radius: 10px;
   position: relative;
-  z-index: 1;
   overflow: hidden;
+  z-index: 1;
   display: flex;
   flex-direction: column-reverse;
 }
@@ -871,18 +848,40 @@
   z-index: 2;
 }
 
-.thermometer-value {
+.thermometer-bulb {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  margin-top: -8px;
+  overflow: hidden;
+}
+
+.thermometer-fluid-bulb {
   position: absolute;
-  left: 50%;
-  top: 10px;
-  transform: translateX(-50%);
+  left: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: red;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.4s;
+}
+
+.thermometer-value {
+  margin-top: 5px;
   font-weight: bold;
   color: #000;
   background: #fff9;
-  padding: 2px 6px;
-  border-radius: 7px;
-  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 14px;
   z-index: 5;
+  text-align: center;
 }
 </style>
 
