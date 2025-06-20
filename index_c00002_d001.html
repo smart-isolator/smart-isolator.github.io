@@ -945,21 +945,12 @@ updateThermometer();
 </script>
 <div class="humidity-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
   <div class="humidity-droplet-svg">
-    <svg width="60" height="90" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#0074d9" class="bi bi-droplet">
-      <path fill-rule="evenodd" d="M7.21.8C7.69.295 8 0 8 0c.109.363.234.708.371 1.038.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8zm.413 1.021A31.25 31.25 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"/>
-      <path fill-rule="evenodd" d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448z"/>
+    <svg width="60" height="90" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="black" stroke-width="2">
+      <path d="M794.848 507.264c-0.672-2.656-2.016-5.056-3.776-7.04l-279.104-465.472-39.872 66.464 0.064 0-240.8 401.536c-0.608 0.992-1.088 2.016-1.44 3.104-27.52 48.64-42.08 103.616-42.08 159.232 0 178.72 145.408 324.128 324.16 324.128s324.128-145.408 324.128-324.128c0-55.072-14.272-109.504-41.28-157.824zM512.032 955.104c-159.904 0-290.048-130.112-290.048-290.016 0-50.688 13.536-100.832 39.104-144.992 0.48-0.832 0.864-1.664 1.184-2.528l249.696-416.416 249.664 416.352c0.32 0.896 0.736 1.76 1.248 2.592 25.6 44.16 39.104 94.304 39.104 144.992 0 159.936-130.112 290.016-290.016 290.016z" fill="blue" clip-path="url(#droplet-clip)"/>
     </svg>
   </div>
   <div class="humidity-value-svg" id="humidity-value" style="text-align:center; font-weight:bold; margin-top:4px; background:rgba(255,255,255,0.8); padding:2px; border-radius:4px;">--%</div>
-  <div style="font-size:11px; text-align:center; color:#666;">Luchtvochtigheid</div>
 </div>
-
-<style>
-.humidity-droplet-svg svg {
-  display: block;
-  margin: 0 auto;
-}
-</style>
 
 <script>
 async function updateHumidity() {
@@ -973,6 +964,8 @@ async function updateHumidity() {
     const headers = rows[0].split(",");
     const hiveIndex = headers.indexOf(hiveId);
 
+    if (hiveIndex === -1) throw new Error("Hive ID not found in CSV headers");
+
     let latestRow;
     for (let i = rows.length - 1; i > 0; i--) {
       const row = rows[i].split(",");
@@ -982,20 +975,25 @@ async function updateHumidity() {
       }
     }
 
-    if (!latestRow) return;
+    if (!latestRow) throw new Error("No valid humidity data found");
 
     const humidity = parseFloat(latestRow[hiveIndex]);
     const dropletHeight = 75; // px (from 10 to 85 in SVG)
-    // SVG: y=10 (top), y=85 (bottom). Fluid fill is a rect from y to 85.
     let percent = Math.min(Math.max(humidity / 100, 0), 1);
     let fillY = 85 - percent * dropletHeight; // Higher humidity = higher fill
 
     // Animate the blue rect
-    document.getElementById("humidity-fluid-rect").setAttribute("y", fillY);
-    document.getElementById("humidity-fluid-rect").setAttribute("height", 85 - fillY);
+    const fluidRect = document.querySelector("#humidity-fluid-rect");
+    if (!fluidRect) throw new Error("Humidity fluid rect not found");
+
+    fluidRect.setAttribute("y", fillY);
+    fluidRect.setAttribute("height", 85 - fillY);
 
     // Show value below
-    document.getElementById("humidity-value").textContent = `${humidity.toFixed(1)}%`;
+    const humidityValue = document.querySelector("#humidity-value");
+    if (!humidityValue) throw new Error("Humidity value element not found");
+
+    humidityValue.textContent = `${humidity.toFixed(1)}%`;
 
   } catch (error) {
     console.error("Error:", error);
