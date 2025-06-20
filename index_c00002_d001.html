@@ -943,5 +943,88 @@ async function updateThermometer() {
 }
 updateThermometer();
 </script>
+<div class="humidity-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
+  <div class="humidity-droplet">
+    <div id="humidity-fluid" class="humidity-fluid"></div>
+    <div id="humidity-value" class="humidity-value"></div>
+  </div>
+</div>
+
+<style>
+.humidity-droplet {
+  width: 40px;
+  height: 60px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.humidity-fluid {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%;
+  background: #00f;
+  border-radius: 50% 50% 0 0;
+  z-index: 1;
+  transition: height 0.4s;
+}
+
+.humidity-value {
+  position: absolute;
+  bottom: 10px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 13px;
+  z-index: 2;
+}
+</style>
+
+<script>
+async function updateHumidity() {
+  const hiveId = "c00002_d001_humidity_hive"; // Replace with your value
+  const csvUrl = "hive_data.csv";
+
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split("\n").filter(row => row.trim() !== "");
+    const headers = rows[0].split(",");
+    const hiveIndex = headers.indexOf(hiveId);
+
+    let latestRow;
+    for (let i = rows.length - 1; i > 0; i--) {
+      const row = rows[i].split(",");
+      if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
+        latestRow = row;
+        break;
+      }
+    }
+
+    if (!latestRow) return;
+
+    const humidity = parseFloat(latestRow[hiveIndex]);
+    const dropletHeight = 60; // px, same as CSS .humidity-droplet height
+
+    // --- FLUID HEIGHT CALC ---
+    let percent = Math.min(Math.max(humidity / 100, 0), 1);
+    let fluidHeight = Math.round(percent * dropletHeight);
+
+    // Fluid height
+    document.getElementById("humidity-fluid").style.height = `${fluidHeight}px`;
+
+    // Show value
+    document.getElementById("humidity-value").textContent = `${humidity.toFixed(1)}%`;
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+updateHumidity();
+</script>
 	</body>
 </html>
