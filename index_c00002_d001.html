@@ -944,43 +944,31 @@ async function updateThermometer() {
 updateThermometer();
 </script>
 <div class="humidity-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
-  <div class="humidity-droplet">
-    <div id="humidity-fluid" class="humidity-fluid"></div>
-    <div id="humidity-value" class="humidity-value"></div>
+  <div class="humidity-droplet-svg">
+    <svg width="60" height="90" viewBox="0 0 60 90">
+      <!-- Droplet outline -->
+      <path id="droplet-outline" d="M30 10 Q10 40 30 85 Q50 40 30 10Z" fill="#f7faff" stroke="#0074d9" stroke-width="2"/>
+      <!-- Fluid fill, this will be updated with JS -->
+      <clipPath id="droplet-clip">
+        <path d="M30 10 Q10 40 30 85 Q50 40 30 10Z" />
+      </clipPath>
+      <rect id="humidity-fluid-rect"
+        x="0" y="0" width="60" height="85"
+        fill="#00bfff"
+        clip-path="url(#droplet-clip)"
+      />
+      <!-- 50% marker line -->
+      <line id="marker50" x1="15" x2="45" y1="47" y2="47" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="4,2"/>
+    </svg>
   </div>
+  <div class="humidity-value-svg" id="humidity-value-svg" style="text-align:center; font-weight:bold; margin-top:4px;">--%</div>
+  <div style="font-size:11px; text-align:center; color:#666;">Luchtvochtigheid</div>
 </div>
 
 <style>
-.humidity-droplet {
-  width: 40px;
-  height: 60px;
-  background: #fff;
-  border: 2px solid #000;
-  border-radius: 50% 50% 40% 40%;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-}
-
-.humidity-fluid {
-  position: absolute;
-  left: 0; bottom: 0;
-  width: 100%;
-  background: #00f;
-  border-radius: 50% 50% 0 0;
-  z-index: 1;
-  transition: height 0.4s;
-}
-
-.humidity-value {
-  position: absolute;
-  bottom: 10px;
-  font-weight: bold;
-  color: #fff;
-  font-size: 13px;
-  z-index: 2;
+.humidity-droplet-svg svg {
+  display: block;
+  margin: 0 auto;
 }
 </style>
 
@@ -1008,17 +996,17 @@ async function updateHumidity() {
     if (!latestRow) return;
 
     const humidity = parseFloat(latestRow[hiveIndex]);
-    const dropletHeight = 60; // px, same as CSS .humidity-droplet height
-
-    // --- FLUID HEIGHT CALC ---
+    const dropletHeight = 75; // px (from 10 to 85 in SVG)
+    // SVG: y=10 (top), y=85 (bottom). Fluid fill is a rect from y to 85.
     let percent = Math.min(Math.max(humidity / 100, 0), 1);
-    let fluidHeight = Math.round(percent * dropletHeight);
+    let fillY = 85 - percent * dropletHeight; // Higher humidity = higher fill
 
-    // Fluid height
-    document.getElementById("humidity-fluid").style.height = `${fluidHeight}px`;
+    // Animate the blue rect
+    document.getElementById("humidity-fluid-rect").setAttribute("y", fillY);
+    document.getElementById("humidity-fluid-rect").setAttribute("height", 85 - fillY);
 
-    // Show value
-    document.getElementById("humidity-value").textContent = `${humidity.toFixed(1)}%`;
+    // Show value below
+    document.getElementById("humidity-value-svg").textContent = `${humidity.toFixed(1)}%`;
 
   } catch (error) {
     console.error("Error:", error);
