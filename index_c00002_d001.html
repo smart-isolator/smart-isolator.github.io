@@ -796,93 +796,153 @@
 </script>
 <div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
   <div class="thermometer">
-    <div id="thermometer-fluid" class="thermometer-fluid"></div>
+    <div class="thermometer-bulb">
+      <div id="thermometer-fluid-bulb" class="thermometer-fluid-bulb"></div>
+    </div>
+    <div class="thermometer-tube">
+      <div id="thermometer-fluid-tube" class="thermometer-fluid-tube"></div>
+      <div id="thermometer-goal" class="thermometer-goal"></div>
+    </div>
     <div id="thermometer-value" class="thermometer-value"></div>
   </div>
 </div>
 
 <style>
-  .thermometer {
-    width: 30px;
-    height: 100px;
-    border: 2px solid #000;
-    border-radius: 15px;
-    position: relative;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    font-size: 12px;
-    color: #000;
-  }
-  .thermometer-fluid {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    background: red;
-    border-radius: 15px;
-  }
-  .thermometer-value {
-    position: absolute;
-    bottom: 10px;
-    font-weight: bold;
-  }
+.thermometer {
+  width: 40px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.thermometer-bulb {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  margin-bottom: -8px;
+  overflow: hidden;
+}
+
+.thermometer-fluid-bulb {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: red;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.thermometer-tube {
+  width: 20px;
+  height: 90px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.thermometer-fluid-tube {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%;
+  background: red;
+  border-radius: 10px 10px 4px 4px;
+  z-index: 1;
+  transition: height 0.4s;
+}
+
+.thermometer-goal {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-top: 2px dashed #228B22;
+  z-index: 2;
+}
+
+.thermometer-value {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
+  font-weight: bold;
+  color: #000;
+  background: #fff9;
+  padding: 2px 6px;
+  border-radius: 7px;
+  font-size: 13px;
+  z-index: 5;
+}
 </style>
 
 <script>
-  async function updateThermometer() {
-    const hiveId = "c00002_d001_temp_hive"; // Use the hive ID parameter
-    const csvUrl = "hive_data.csv"; // URL to the CSV file
+async function updateThermometer() {
+  const hiveId = "c00002_d001_temp_hive"; // Replace with your value
+  const csvUrl = "hive_data.csv";
 
-    try {
-      const response = await fetch(csvUrl);
-      const csvText = await response.text();
-      const rows = csvText.split("\n").filter(row => row.trim() !== ""); // Remove empty rows
-      const headers = rows[0].split(","); // Use commas for CSV parsing
-      const hiveIndex = headers.indexOf(hiveId);
+  // --- Settings ---
+  const minTemp = 0;
+  const maxTemp = 50;
+  const goalTemp = 35;
+  // -----------------
 
-      console.log("Headers:", headers);
-      console.log("Hive Index:", hiveIndex);
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split("\n").filter(row => row.trim() !== "");
+    const headers = rows[0].split(",");
+    const hiveIndex = headers.indexOf(hiveId);
 
-      if (hiveIndex === -1) {
-        console.error(`Hive ID ${hiveId} not found in CSV headers.`);
-        return;
+    let latestRow;
+    for (let i = rows.length - 1; i > 0; i--) {
+      const row = rows[i].split(",");
+      if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
+        latestRow = row;
+        break;
       }
-
-      // Find the latest valid row
-      let latestRow;
-      for (let i = rows.length - 1; i > 0; i--) {
-        const row = rows[i].split(",");
-        if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
-          latestRow = row;
-          break;
-        }
-      }
-
-      console.log("Latest Row:", latestRow);
-
-      if (!latestRow) {
-        console.error("No valid rows found in CSV.");
-        return;
-      }
-
-      const temperature = parseFloat(latestRow[hiveIndex]);
-
-      console.log("Temperature Value:", temperature);
-
-      if (!isNaN(temperature)) {
-        const percentage = Math.min(Math.max((temperature / 50) * 100, 0), 100); // Scale temperature to percentage
-        document.getElementById("thermometer-fluid").style.height = `${percentage}%`;
-        document.getElementById("thermometer-value").textContent = `${temperature.toFixed(1)}°C`;
-      } else {
-        console.error("Invalid temperature value.");
-      }
-    } catch (error) {
-      console.error("Error fetching or processing CSV data:", error);
     }
-  }
 
-  updateThermometer();
+    if (!latestRow) return;
+
+    const temperature = parseFloat(latestRow[hiveIndex]);
+    const tubeHeight = 90; // px, same as CSS .thermometer-tube height
+
+    // --- FLUID HEIGHT CALC ---
+    let percent = Math.min(Math.max((temperature - minTemp) / (maxTemp - minTemp), 0), 1);
+    let fluidTubeHeight = Math.round(percent * tubeHeight);
+
+    // --- GOAL POSITION ---
+    let goalPercent = Math.min(Math.max((goalTemp - minTemp) / (maxTemp - minTemp), 0), 1);
+    let goalPosition = Math.round(goalPercent * tubeHeight);
+
+    // Fill the bulb if any temp > 0
+    document.getElementById("thermometer-fluid-bulb").style.opacity = percent > 0 ? 1 : 0.15;
+
+    // Fluid tube height
+    document.getElementById("thermometer-fluid-tube").style.height = `${fluidTubeHeight}px`;
+
+    // Goal indicator position (from bottom)
+    document.getElementById("thermometer-goal").style.bottom = `${goalPosition-1}px`;
+
+    // Show value
+    document.getElementById("thermometer-value").textContent = `${temperature.toFixed(1)}°C`;
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+updateThermometer();
 </script>
 	</body>
 </html>
