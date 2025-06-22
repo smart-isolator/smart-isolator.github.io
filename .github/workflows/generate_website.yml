@@ -30,14 +30,6 @@ jobs:
             # Try to download HTML
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
         
-            # Try to download SVG
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_1.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_2.svg" -o images/${id}_2.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_3.svg" -o images/${id}_3.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_4.svg" -o images/${id}_4.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_5.svg" -o images/${id}_5.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_6.svg" -o images/${id}_6.svg || true
-
           done
 
       - name: Download JSON and CSV files from Fly.io
