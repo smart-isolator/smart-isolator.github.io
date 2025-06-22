@@ -26,17 +26,17 @@ jobs:
           cd site
           mkdir -p images
         
-          for id in c00001_d001 c00002_d001 c00003_d001 c99999_d001; do
+          for id in c00001_d001 c00001_d011 c00001_d021 c00001_d031 c00002_d001 c00003_d001 c00004_d001 c99999_d001; do
             # Try to download HTML
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
         
-            # Try to download SVG
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_1.svg" -o images/${id}_1.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_2.svg" -o images/${id}_2.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_3.svg" -o images/${id}_3.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_4.svg" -o images/${id}_4.svg || true
-            curl -f "https://smart-isolator.fly.dev/static/images/${id}_5.svg" -o images/${id}_5.svg || true
           done
+
+      - name: Download JSON and CSV files from Fly.io
+        run: |
+          cd site
+          curl -f "https://smart-isolator.fly.dev/static/hive_data.json" -o hive_data.json || true
+          curl -f "https://smart-isolator.fly.dev/static/hive_data.csv" -o hive_data.csv || true
 
       - name: Commit & push to GitHub Pages
         run: |

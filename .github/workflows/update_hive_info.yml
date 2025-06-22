@@ -1,0 +1,46 @@
+name: Update Hive Info from Backend
+
+on:
+  repository_dispatch:
+    types: [update_hive_info]
+
+jobs:
+  update-hive-info:
+    runs-on: ubuntu-latest
+    env:
+      FLY_API: https://smart-isolator.fly.dev
+    steps:
+      - name: Checkout Pages repo
+        uses: actions/checkout@v4
+        with:
+          repository: smart-isolator/smart-isolator.github.io
+          token: ${{ secrets.GH_PAT }}
+          path: site
+
+      - name: Download updated hive info JSON
+        if: ${{ github.event.client_payload.filename && github.event.client_payload.filename != '' }}
+        run: |
+          cd site/hive_info
+          curl -fSL "$FLY_API/static/hive_info/${{ github.event.client_payload.filename }}" -o "${{ github.event.client_payload.filename }}"
+
+      - name: Download updated images (if any)
+        if: ${{ github.event.client_payload.image_fields && github.event.client_payload.image_fields != '' }}
+        run: |
+          cd site/images
+          for field in ${{ github.event.client_payload.image_fields }}; do
+              url="$FLY_API/static/hive_info/${field}"
+              if curl -fsI "$url" >/dev/null; then
+                curl -fSL "$url" -o "$field"
+                break
+              fi
+            done
+
+      - name: Commit & push to GitHub Pages
+        run: |
+          cd site
+          git config user.name "Updating the website api"
+          git config user.email "b_daan@hotmail.com"
+          git add hive_info/
+          git add images/
+          git commit -m "Update hive info for ${{ github.event.client_payload.user }}/${{ github.event.client_payload.hive }} at ${{ github.event.client_payload.timestamp }}" || echo "No changes to commit"
+          git push
