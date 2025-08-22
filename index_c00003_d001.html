@@ -1164,5 +1164,84 @@ updateDroplet();
 
 </script>
 
+<script>
+// Auto-refresh functionality
+(function() {
+  const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+  let lastRefreshTime = Date.now();
+  let refreshTimer = null;
+  let isPageVisible = !document.hidden;
+
+  function refreshPage() {
+    console.log('Auto-refreshing page...');
+    window.location.reload();
+  }
+
+  function startRefreshTimer() {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+    refreshTimer = setTimeout(() => {
+      lastRefreshTime = Date.now();
+      refreshPage();
+    }, REFRESH_INTERVAL);
+  }
+
+  function handleVisibilityChange() {
+    const wasVisible = isPageVisible;
+    isPageVisible = !document.hidden;
+    
+    if (!wasVisible && isPageVisible) {
+      // Page became visible again
+      const timeSinceLastRefresh = Date.now() - lastRefreshTime;
+      
+      if (timeSinceLastRefresh >= REFRESH_INTERVAL) {
+        // It's been more than 10 minutes since last refresh, refresh immediately
+        console.log('Page became visible after 10+ minutes, refreshing...');
+        lastRefreshTime = Date.now();
+        refreshPage();
+      } else {
+        // Schedule next refresh based on remaining time
+        const remainingTime = REFRESH_INTERVAL - timeSinceLastRefresh;
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        refreshTimer = setTimeout(() => {
+          lastRefreshTime = Date.now();
+          refreshPage();
+        }, remainingTime);
+      }
+    } else if (wasVisible && !isPageVisible) {
+      // Page became hidden, clear the timer to save resources
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+  }
+
+  // Start the initial timer
+  if (isPageVisible) {
+    startRefreshTimer();
+  }
+
+  // Listen for visibility changes
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Also listen for window focus/blur as a backup
+  window.addEventListener('focus', () => {
+    if (document.hidden === false) {
+      handleVisibilityChange();
+    }
+  });
+
+  // Store the last refresh time in sessionStorage to persist across page loads
+  if (sessionStorage.getItem('lastRefreshTime')) {
+    lastRefreshTime = parseInt(sessionStorage.getItem('lastRefreshTime'), 10);
+  }
+  sessionStorage.setItem('lastRefreshTime', lastRefreshTime.toString());
+})();
+</script>
+
 	</body>
 </html>
