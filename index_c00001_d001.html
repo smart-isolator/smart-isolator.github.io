@@ -787,23 +787,47 @@
   <p>Bedankt voor Uw bezoek</p>
 </footer>
 <script>
-(function() {
+// Wait for DOM to be ready, then load JSON data
+document.addEventListener('DOMContentLoaded', function() {
   var hiveId = 'c00001_d001';
-  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/' + hiveId + '.json?t=' + Date.now();
+  
+  console.log('=== LOADING JSON DATA ===');
+  console.log('hiveId:', hiveId);
+  console.log('jsonUrl:', jsonUrl);
+  
   fetch(jsonUrl)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      // Banners
-      for (var i = 1; i <= 5; i++) {
-        var bannerText = data['banner' + i] || 'Het bijenvolk';
-        var el = document.getElementById('banner-text-' + i);
-        if (el) el.textContent = bannerText;
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
       }
-      // Gegevens
-      if (data.naam_imker) document.getElementById('naam-imker').textContent = data.naam_imker;
+      return response.json();
+    })
+    .then(function(data) {
+      console.log('JSON loaded:', data);
+      
+      // Update all data fields
+      updateElement('naam-imker', data.naam_imker);
+      updateElement('plaats', data.plaats);
+      updateElement('contact-gegevens', data.contact_gegevens);
+      updateElement('introductie-imkerij', data.introductie_imkerij);
+      updateElement('promotie-aanbod', data.promotie_aanbod);
+      updateElement('activiteiten-en-agenda', data.activiteiten_en_agenda);
+      updateElement('bezoekers-informatie', data.bezoekers_informatie);
+      
+      // Update banners
+      for (var i = 1; i <= 5; i++) {
+        updateElement('banner-text-' + i, data['banner' + i] || 'Het bijenvolk');
+      }
+      
+      // Update website link
+      var websiteEl = document.getElementById('website-link');
+      if (websiteEl && data.website && data.website !== 'Geen website') {
+        websiteEl.innerHTML = '<a href="' + data.website + '" target="_blank">Link</a>';
+      }
+      
+      // Update place in banners
       if (data.plaats) {
-        document.getElementById('plaats').textContent = data.plaats;
-        // Also update all banner locations
         var bannerLocs = document.querySelectorAll('h2');
         for (var j = 0; j < bannerLocs.length; j++) {
           if (bannerLocs[j].textContent === 'In de buiten lucht') {
@@ -811,23 +835,17 @@
           }
         }
       }
-      if (data.website) document.getElementById('website').textContent = data.website;
-      if (data.contact_gegevens) document.getElementById('contact-gegevens').textContent = data.contact_gegevens;
-      // Informatie
-      if (data.introductie_imkerij) document.getElementById('introductie-imkerij').textContent = data.introductie_imkerij;
-      if (data.promotie_aanbod) document.getElementById('promotie-aanbod').textContent = data.promotie_aanbod;
-      if (data.activiteiten_en_agenda) document.getElementById('activiteiten-en-agenda').textContent = data.activiteiten_en_agenda;
-      if (data.bezoekers_informatie) document.getElementById('bezoekers-informatie').textContent = data.bezoekers_informatie;
-      // Agenda
+      
+      // Update agenda
       var agenda = [];
       for (var i = 1; i <= 5; i++) {
-        var text = data['agenda' + i + '_text'] || '';
-        var time = data['agenda' + i + '_time'] || '';
+        var text = data['agenda' + i + '_text'];
+        var time = data['agenda' + i + '_time'];
         if (text && text.trim() && time && time.trim()) {
           agenda.push({ text: text, time: time });
         }
       }
-      console.log('Agenda array:', agenda); // Debug line
+      
       var tbody = document.getElementById('agenda-tbody');
       if (agenda.length > 0 && tbody) {
         tbody.innerHTML = '';
@@ -841,74 +859,42 @@
           tr.appendChild(tdText);
           tbody.appendChild(tr);
         });
-        document.getElementById('agenda-table').style.display = '';
+        document.getElementById('agenda-table').style.display = 'table';
       }
-    })
-    .catch(function(err) {
-      // If fetch fails, keep the default text
-    });
-})();
-</script>
-<script>
-// Dynamically update the page title to include the imker name from gegevens
-(function() {
-  var updateTitle = function() {
-    var naamImker = document.getElementById('naam-imker');
-    if (naamImker && naamImker.textContent.trim()) {
-      document.title = 'De bijenkast van binnen: ' + naamImker.textContent.trim();
-    }
-  };
-  // Run after gegevens are loaded
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(updateTitle, 500); // Wait for gegevens to be filled
-  } else {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(updateTitle, 500);
-    });
-  }
-})();
-</script>
-<script>
-// Dynamically update the honey order modal title with the imker name
-(function() {
-  var updateHoneyTitle = function() {
-    var naamImker = document.getElementById('naam-imker');
-    var honeyTitle = document.getElementById('honey-order-title');
-    if (naamImker && naamImker.textContent.trim() && honeyTitle) {
-      honeyTitle.textContent = 'Honing bestellen bij ' + naamImker.textContent.trim();
-    }
-  };
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(updateHoneyTitle, 600); // Wait for gegevens to be filled
-  } else {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(updateHoneyTitle, 600);
-    });
-  }
-})();
-</script>
-<script>
-(function() {
-  var hiveId = 'c00001_d001';
-  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
-  fetch(jsonUrl)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      // Update website link text and href dynamically
-      var websiteSpan = document.getElementById('website-link');
-      if (websiteSpan) {
-        if (data.website && data.website.trim() && data.website !== 'Geen website') {
-          websiteSpan.innerHTML = '<a href="' + data.website + '" target="_blank" rel="noopener">Link</a>';
-        } else {
-          websiteSpan.textContent = 'Geen website';
+      
+      console.log('Data update completed');
+      
+      // Update page title with imker name
+      setTimeout(function() {
+        if (data.naam_imker) {
+          document.title = 'De bijenkast van binnen: ' + data.naam_imker;
         }
-      }
+        
+        // Update honey modal title
+        var honeyTitle = document.getElementById('honey-order-title');
+        if (honeyTitle && data.naam_imker) {
+          honeyTitle.textContent = 'Honing bestellen bij ' + data.naam_imker;
+        }
+      }, 100);
     })
     .catch(function(err) {
-      // If fetch fails, keep the default text
+      console.error('JSON load failed:', err.message);
+      // Only show alert for non-404 errors (404 means no JSON file for this hive)
+      if (!err.message.includes('404')) {
+        alert('Data loading failed: ' + err.message);
+      }
     });
-})();
+  
+  function updateElement(id, value) {
+    var el = document.getElementById(id);
+    if (el && value && value.trim()) {
+      el.textContent = value;
+      console.log('Updated ' + id + ':', value);
+    }
+  }
+});
 </script>
+
 <div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
   <div class="thermometer">
     <div class="thermometer-tube">
