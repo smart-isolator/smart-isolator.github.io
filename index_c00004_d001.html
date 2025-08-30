@@ -789,6 +789,15 @@
 <script>
 // Wait for DOM to be ready, then load JSON data
 document.addEventListener('DOMContentLoaded', function() {
+  // Define helper function first
+  function updateElement(id, value) {
+    var el = document.getElementById(id);
+    if (el && value && value.trim()) {
+      el.textContent = value;
+      console.log('Updated ' + id + ':', value);
+    }
+  }
+  
   var hiveId = 'c00004_d001';
   var jsonUrl = 'https://smart-isolator.github.io/hive_info/' + hiveId + '.json?t=' + Date.now();
   
@@ -884,14 +893,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Data loading failed: ' + err.message);
       }
     });
-  
-  function updateElement(id, value) {
-    var el = document.getElementById(id);
-    if (el && value && value.trim()) {
-      el.textContent = value;
-      console.log('Updated ' + id + ':', value);
-    }
-  }
 });
 </script>
 
