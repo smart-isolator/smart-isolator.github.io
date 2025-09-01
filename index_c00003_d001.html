@@ -37,10 +37,10 @@
 				        <label for="honey-city">Plaats:</label>
 				        <input type="text" id="honey-city" name="honey-city" maxlength="40">
 				      </div>
-				      <label for="honey-name">Naam (optioneel):</label>
-				      <input type="text" id="honey-name" name="honey-name" maxlength="60">
-				      <label for="honey-email">E-mail (optioneel):</label>
-				      <input type="email" id="honey-email" name="honey-email" maxlength="80">
+				      <label for="honey-name">Naam:</label>
+				      <input type="text" id="honey-name" name="honey-name" maxlength="60" required>
+				      <label for="honey-email">E-mail:</label>
+				      <input type="email" id="honey-email" name="honey-email" maxlength="80" required>
 				      <button type="button" id="honey-order-review" class="honey-order-submit">Verder</button>
 				    </form>
 				    <div id="honey-order-review-summary" class="honey-order-review-summary" style="display:none;"></div>
@@ -642,25 +642,9 @@
 				  if (deliverySelect.value === 'delivery') {
 				    addressFields.style.display = 'block';
 				    addressFields.querySelectorAll('input').forEach(i => i.required = true);
-				    // name and email required for delivery
-				    if (nameInput) nameInput.required = true;
-				    if (emailInput) emailInput.required = true;
-				    // update labels to remove (optioneel)
-				    const nameLabel = document.querySelector('label[for="honey-name"]');
-				    const emailLabel = document.querySelector('label[for="honey-email"]');
-				    if (nameLabel) nameLabel.innerHTML = 'Naam:';
-				    if (emailLabel) emailLabel.innerHTML = 'E-mail:';
 				  } else {
 				    addressFields.style.display = 'none';
 				    addressFields.querySelectorAll('input').forEach(i => i.required = false);
-				    // name and email optional for pickup
-				    if (nameInput) nameInput.required = false;
-				    if (emailInput) emailInput.required = false;
-				    // restore (optioneel) in labels
-				    const nameLabel = document.querySelector('label[for="honey-name"]');
-				    const emailLabel = document.querySelector('label[for="honey-email"]');
-				    if (nameLabel) nameLabel.innerHTML = 'Naam (optioneel):';
-				    if (emailLabel) emailLabel.innerHTML = 'E-mail (optioneel):';
 				  }
 				}
 
