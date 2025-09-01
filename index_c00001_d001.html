@@ -715,7 +715,16 @@
 				    city = document.getElementById('honey-city').value;
 				    if (!address || !postcode || !city) return;
 				  }
+				  // Validate required fields
 				  if (!amount || amount < 1 || !price || !weight) return;
+				  if (!name || name.trim() === '') {
+				    alert('Naam is verplicht.');
+				    return;
+				  }
+				  if (!email || email.trim() === '') {
+				    alert('E-mailadres is verplicht.');
+				    return;
+				  }
 				  const total = (amount * parseFloat(price)).toFixed(2);
 				  let summary = `<strong>Bevestig uw bestelling:</strong><br>`;
 				  summary += `Aantal potten: <strong>${amount}</strong><br>`;
@@ -726,8 +735,8 @@
 				  if (delivery === 'delivery') {
 				    summary += `Adres: <strong>${address}, ${postcode}, ${city}</strong><br>`;
 				  }
-				  if (name) summary += `Naam: <strong>${name}</strong><br>`;
-				  if (email) summary += `E-mail: <strong>${email}</strong><br>`;
+				  summary += `Naam: <strong>${name}</strong><br>`;
+				  summary += `E-mail: <strong>${email}</strong><br>`;
 				  summary += `<button id='honey-order-confirm-btn'>Bestelling bevestigen</button>`;
 				  honeyReviewSummary.innerHTML = summary;
 				  honeyReviewSummary.style.display = 'block';
