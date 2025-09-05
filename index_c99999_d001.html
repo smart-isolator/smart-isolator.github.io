@@ -37,10 +37,10 @@
 				        <label for="honey-city">Plaats:</label>
 				        <input type="text" id="honey-city" name="honey-city" maxlength="40">
 				      </div>
-				      <label for="honey-name">Naam (optioneel):</label>
-				      <input type="text" id="honey-name" name="honey-name" maxlength="60">
-				      <label for="honey-email">E-mail (optioneel):</label>
-				      <input type="email" id="honey-email" name="honey-email" maxlength="80">
+				      <label for="honey-name">Naam:</label>
+				      <input type="text" id="honey-name" name="honey-name" maxlength="60" required>
+				      <label for="honey-email">E-mail:</label>
+				      <input type="email" id="honey-email" name="honey-email" maxlength="80" required>
 				      <button type="button" id="honey-order-review" class="honey-order-submit">Verder</button>
 				    </form>
 				    <div id="honey-order-review-summary" class="honey-order-review-summary" style="display:none;"></div>
@@ -642,25 +642,9 @@
 				  if (deliverySelect.value === 'delivery') {
 				    addressFields.style.display = 'block';
 				    addressFields.querySelectorAll('input').forEach(i => i.required = true);
-				    // name and email required for delivery
-				    if (nameInput) nameInput.required = true;
-				    if (emailInput) emailInput.required = true;
-				    // update labels to remove (optioneel)
-				    const nameLabel = document.querySelector('label[for="honey-name"]');
-				    const emailLabel = document.querySelector('label[for="honey-email"]');
-				    if (nameLabel) nameLabel.innerHTML = 'Naam:';
-				    if (emailLabel) emailLabel.innerHTML = 'E-mail:';
 				  } else {
 				    addressFields.style.display = 'none';
 				    addressFields.querySelectorAll('input').forEach(i => i.required = false);
-				    // name and email optional for pickup
-				    if (nameInput) nameInput.required = false;
-				    if (emailInput) emailInput.required = false;
-				    // restore (optioneel) in labels
-				    const nameLabel = document.querySelector('label[for="honey-name"]');
-				    const emailLabel = document.querySelector('label[for="honey-email"]');
-				    if (nameLabel) nameLabel.innerHTML = 'Naam (optioneel):';
-				    if (emailLabel) emailLabel.innerHTML = 'E-mail (optioneel):';
 				  }
 				}
 
@@ -731,7 +715,16 @@
 				    city = document.getElementById('honey-city').value;
 				    if (!address || !postcode || !city) return;
 				  }
+				  // Validate required fields
 				  if (!amount || amount < 1 || !price || !weight) return;
+				  if (!name || name.trim() === '') {
+				    alert('Naam is verplicht.');
+				    return;
+				  }
+				  if (!email || email.trim() === '') {
+				    alert('E-mailadres is verplicht.');
+				    return;
+				  }
 				  const total = (amount * parseFloat(price)).toFixed(2);
 				  let summary = `<strong>Bevestig uw bestelling:</strong><br>`;
 				  summary += `Aantal potten: <strong>${amount}</strong><br>`;
@@ -742,8 +735,8 @@
 				  if (delivery === 'delivery') {
 				    summary += `Adres: <strong>${address}, ${postcode}, ${city}</strong><br>`;
 				  }
-				  if (name) summary += `Naam: <strong>${name}</strong><br>`;
-				  if (email) summary += `E-mail: <strong>${email}</strong><br>`;
+				  summary += `Naam: <strong>${name}</strong><br>`;
+				  summary += `E-mail: <strong>${email}</strong><br>`;
 				  summary += `<button id='honey-order-confirm-btn'>Bestelling bevestigen</button>`;
 				  honeyReviewSummary.innerHTML = summary;
 				  honeyReviewSummary.style.display = 'block';
@@ -787,23 +780,56 @@
   <p>Bedankt voor Uw bezoek</p>
 </footer>
 <script>
-(function() {
+// Wait for DOM to be ready, then load JSON data
+document.addEventListener('DOMContentLoaded', function() {
+  // Define helper function first
+  function updateElement(id, value) {
+    var el = document.getElementById(id);
+    if (el && value && value.trim()) {
+      el.textContent = value;
+      console.log('Updated ' + id + ':', value);
+    }
+  }
+  
   var hiveId = 'c99999_d001';
-  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/' + hiveId + '.json?t=' + Date.now();
+  
+  console.log('=== LOADING JSON DATA ===');
+  console.log('hiveId:', hiveId);
+  console.log('jsonUrl:', jsonUrl);
+  
   fetch(jsonUrl)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      // Banners
-      for (var i = 1; i <= 5; i++) {
-        var bannerText = data['banner' + i] || 'Het bijenvolk';
-        var el = document.getElementById('banner-text-' + i);
-        if (el) el.textContent = bannerText;
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
       }
-      // Gegevens
-      if (data.naam_imker) document.getElementById('naam-imker').textContent = data.naam_imker;
+      return response.json();
+    })
+    .then(function(data) {
+      console.log('JSON loaded:', data);
+      
+      // Update all data fields
+      updateElement('naam-imker', data.naam_imker);
+      updateElement('plaats', data.plaats);
+      updateElement('contact-gegevens', data.contact_gegevens);
+      updateElement('introductie-imkerij', data.introductie_imkerij);
+      updateElement('promotie-aanbod', data.promotie_aanbod);
+      updateElement('activiteiten-en-agenda', data.activiteiten_en_agenda);
+      updateElement('bezoekers-informatie', data.bezoekers_informatie);
+      
+      // Update banners
+      for (var i = 1; i <= 5; i++) {
+        updateElement('banner-text-' + i, data['banner' + i] || 'Het bijenvolk');
+      }
+      
+      // Update website link
+      var websiteEl = document.getElementById('website-link');
+      if (websiteEl && data.website && data.website !== 'Geen website') {
+        websiteEl.innerHTML = '<a href="' + data.website + '" target="_blank">Link</a>';
+      }
+      
+      // Update place in banners
       if (data.plaats) {
-        document.getElementById('plaats').textContent = data.plaats;
-        // Also update all banner locations
         var bannerLocs = document.querySelectorAll('h2');
         for (var j = 0; j < bannerLocs.length; j++) {
           if (bannerLocs[j].textContent === 'In de buiten lucht') {
@@ -811,23 +837,17 @@
           }
         }
       }
-      if (data.website) document.getElementById('website').textContent = data.website;
-      if (data.contact_gegevens) document.getElementById('contact-gegevens').textContent = data.contact_gegevens;
-      // Informatie
-      if (data.introductie_imkerij) document.getElementById('introductie-imkerij').textContent = data.introductie_imkerij;
-      if (data.promotie_aanbod) document.getElementById('promotie-aanbod').textContent = data.promotie_aanbod;
-      if (data.activiteiten_en_agenda) document.getElementById('activiteiten-en-agenda').textContent = data.activiteiten_en_agenda;
-      if (data.bezoekers_informatie) document.getElementById('bezoekers-informatie').textContent = data.bezoekers_informatie;
-      // Agenda
+      
+      // Update agenda
       var agenda = [];
       for (var i = 1; i <= 5; i++) {
-        var text = data['agenda' + i + '_text'] || '';
-        var time = data['agenda' + i + '_time'] || '';
+        var text = data['agenda' + i + '_text'];
+        var time = data['agenda' + i + '_time'];
         if (text && text.trim() && time && time.trim()) {
           agenda.push({ text: text, time: time });
         }
       }
-      console.log('Agenda array:', agenda); // Debug line
+      
       var tbody = document.getElementById('agenda-tbody');
       if (agenda.length > 0 && tbody) {
         tbody.innerHTML = '';
@@ -841,74 +861,34 @@
           tr.appendChild(tdText);
           tbody.appendChild(tr);
         });
-        document.getElementById('agenda-table').style.display = '';
+        document.getElementById('agenda-table').style.display = 'table';
       }
-    })
-    .catch(function(err) {
-      // If fetch fails, keep the default text
-    });
-})();
-</script>
-<script>
-// Dynamically update the page title to include the imker name from gegevens
-(function() {
-  var updateTitle = function() {
-    var naamImker = document.getElementById('naam-imker');
-    if (naamImker && naamImker.textContent.trim()) {
-      document.title = 'De bijenkast van binnen: ' + naamImker.textContent.trim();
-    }
-  };
-  // Run after gegevens are loaded
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(updateTitle, 500); // Wait for gegevens to be filled
-  } else {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(updateTitle, 500);
-    });
-  }
-})();
-</script>
-<script>
-// Dynamically update the honey order modal title with the imker name
-(function() {
-  var updateHoneyTitle = function() {
-    var naamImker = document.getElementById('naam-imker');
-    var honeyTitle = document.getElementById('honey-order-title');
-    if (naamImker && naamImker.textContent.trim() && honeyTitle) {
-      honeyTitle.textContent = 'Honing bestellen bij ' + naamImker.textContent.trim();
-    }
-  };
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(updateHoneyTitle, 600); // Wait for gegevens to be filled
-  } else {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(updateHoneyTitle, 600);
-    });
-  }
-})();
-</script>
-<script>
-(function() {
-  var hiveId = 'c99999_d001';
-  var jsonUrl = 'https://smart-isolator.github.io/hive_info/'  + hiveId + '.json';
-  fetch(jsonUrl)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      // Update website link text and href dynamically
-      var websiteSpan = document.getElementById('website-link');
-      if (websiteSpan) {
-        if (data.website && data.website.trim() && data.website !== 'Geen website') {
-          websiteSpan.innerHTML = '<a href="' + data.website + '" target="_blank" rel="noopener">Link</a>';
-        } else {
-          websiteSpan.textContent = 'Geen website';
+      
+      console.log('Data update completed');
+      
+      // Update page title with imker name
+      setTimeout(function() {
+        if (data.naam_imker) {
+          document.title = 'De bijenkast van binnen: ' + data.naam_imker;
         }
-      }
+        
+        // Update honey modal title
+        var honeyTitle = document.getElementById('honey-order-title');
+        if (honeyTitle && data.naam_imker) {
+          honeyTitle.textContent = 'Honing bestellen bij ' + data.naam_imker;
+        }
+      }, 100);
     })
     .catch(function(err) {
-      // If fetch fails, keep the default text
+      console.error('JSON load failed:', err.message);
+      // Only show alert for non-404 errors (404 means no JSON file for this hive)
+      if (!err.message.includes('404')) {
+        alert('Data loading failed: ' + err.message);
+      }
     });
-})();
+});
 </script>
+
 <div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
   <div class="thermometer">
     <div class="thermometer-tube">
@@ -1162,6 +1142,85 @@ async function updateDroplet() {
 }
 updateDroplet();
 
+</script>
+
+<script>
+// Auto-refresh functionality
+(function() {
+  const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+  let lastRefreshTime = Date.now();
+  let refreshTimer = null;
+  let isPageVisible = !document.hidden;
+
+  function refreshPage() {
+    console.log('Auto-refreshing page...');
+    window.location.reload();
+  }
+
+  function startRefreshTimer() {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+    refreshTimer = setTimeout(() => {
+      lastRefreshTime = Date.now();
+      refreshPage();
+    }, REFRESH_INTERVAL);
+  }
+
+  function handleVisibilityChange() {
+    const wasVisible = isPageVisible;
+    isPageVisible = !document.hidden;
+    
+    if (!wasVisible && isPageVisible) {
+      // Page became visible again
+      const timeSinceLastRefresh = Date.now() - lastRefreshTime;
+      
+      if (timeSinceLastRefresh >= REFRESH_INTERVAL) {
+        // It's been more than 10 minutes since last refresh, refresh immediately
+        console.log('Page became visible after 10+ minutes, refreshing...');
+        lastRefreshTime = Date.now();
+        refreshPage();
+      } else {
+        // Schedule next refresh based on remaining time
+        const remainingTime = REFRESH_INTERVAL - timeSinceLastRefresh;
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        refreshTimer = setTimeout(() => {
+          lastRefreshTime = Date.now();
+          refreshPage();
+        }, remainingTime);
+      }
+    } else if (wasVisible && !isPageVisible) {
+      // Page became hidden, clear the timer to save resources
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+  }
+
+  // Start the initial timer
+  if (isPageVisible) {
+    startRefreshTimer();
+  }
+
+  // Listen for visibility changes
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Also listen for window focus/blur as a backup
+  window.addEventListener('focus', () => {
+    if (document.hidden === false) {
+      handleVisibilityChange();
+    }
+  });
+
+  // Store the last refresh time in sessionStorage to persist across page loads
+  if (sessionStorage.getItem('lastRefreshTime')) {
+    lastRefreshTime = parseInt(sessionStorage.getItem('lastRefreshTime'), 10);
+  }
+  sessionStorage.setItem('lastRefreshTime', lastRefreshTime.toString());
+})();
 </script>
 
 	</body>
