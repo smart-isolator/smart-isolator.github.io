@@ -1,0 +1,1227 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>De bijenkast van binnen</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body>
+
+		<!-- Header -->
+			<header id="header" class="alt">
+				<div class="logo"><a href="index_c00005_d001.html"><span>Home</span></a></div>
+				<button id="honey-jar-btn" class="honey-jar-btn" style="display:none; white-space:normal; text-align:center; word-break:break-word; max-width: 180px; width: 90%; min-width: 100px; margin: 0 auto; line-height: 1.1; padding: 0.35em 0.5em; font-size: 1em; vertical-align: middle; align-items: center; justify-content: center; height: auto; min-height: 2.2em; overflow-wrap: break-word;">
+          <span id="honey-jar-amount" style="display:block;"></span>
+          <span id="honey-jar-details" style="display:block;"></span>
+        </button>
+				<div id="honey-order-modal" class="honey-order-modal" style="display:none;">
+				  <div class="honey-order-modal-content" style="max-height:90vh; overflow-y:auto;">
+				    <button class="honey-order-modal-close" id="honey-order-modal-close">&times;</button>
+				    <h2 id="honey-order-title">Honing bestellen bij de imker</h2>
+				    <p class="honey-info">Heerlijke lokale honing, direct van de imker!</p>
+				    <div id="honey-information" style="margin-bottom:0.7em; color:#ffd600; font-weight:500; display:none;"></div>
+				    <form id="honey-order-form">
+				      <label for="honey-amount">Aantal potten:</label>
+				      <input type="number" id="honey-amount" name="honey-amount" min="1" max="99" required>
+				      <div id="honey-total" style="margin-bottom:0.5em; color:#ffd600; font-weight:600;"></div>
+				      <label for="honey-delivery">Afleveroptie:</label>
+				      <select id="honey-delivery" name="honey-delivery">
+				        <option value="pickup">Afhalen bij de imker</option>
+				      </select>
+				      <div id="honey-address-fields" style="display:none; margin-top:0.5em;">
+				        <label for="honey-address">Adres:</label>
+				        <input type="text" id="honey-address" name="honey-address" maxlength="120">
+				        <label for="honey-postcode">Postcode:</label>
+				        <input type="text" id="honey-postcode" name="honey-postcode" maxlength="12">
+				        <label for="honey-city">Plaats:</label>
+				        <input type="text" id="honey-city" name="honey-city" maxlength="40">
+				      </div>
+				      <label for="honey-name">Naam:</label>
+				      <input type="text" id="honey-name" name="honey-name" maxlength="60" required>
+				      <label for="honey-email">E-mail:</label>
+				      <input type="email" id="honey-email" name="honey-email" maxlength="80" required>
+				      <button type="button" id="honey-order-review" class="honey-order-submit">Verder</button>
+				    </form>
+				    <div id="honey-order-review-summary" class="honey-order-review-summary" style="display:none;"></div>
+				    <div class="honey-order-disclaimer">
+				      Uw gegevens worden niet door ons opgeslagen, maar rechtstreeks doorgestuurd naar de imker. Wij verzorgen geen betaling — regel betaling en afhaling rechtstreeks met de imker. Wij zijn niet aansprakelijk voor foutieve informatie over de verkoop of voor eventuele problemen bij betaling of levering. Neem bij vragen of problemen contact met ons op.
+				    </div>
+				    <div id="honey-order-confirm" class="honey-order-confirm" style="display:none;"></div>
+				  </div>
+				</div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="index_c00005_d001.html">Home</a></li>
+					<li><a href="locaties.html">Locaties</a></li>
+					<li><a href="bijen.html">Bijen</a></li>
+					<li><a href="vegetatie.html">Vegetatie</a></li>
+					<li><a href="information.html">Informatie</a></li>
+				</ul>
+			</nav>
+
+		<!-- Banner Section -->
+			<section class="banner half">
+				<article>
+					<img id="banner-img-1" src="images/c00005_d001_1.jpg" alt="" />
+					<div class="inner">
+						<header>
+							<p id="banner-text-1">Het bijenvolk</p>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
+						</header>
+					</div>
+				</article>
+				<article>
+					<img id="banner-img-2" src="images/c00005_d001_2.jpg" alt="" />
+					<div class="inner">
+						<header>
+							<p id="banner-text-2">Het bijenvolk</p>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
+						</header>
+					</div>
+				</article>
+				<article>
+					<img id="banner-img-3" src="images/c00005_d001_3.jpg" alt="" />
+					<div class="inner">
+						<header>
+							<p id="banner-text-3">Het bijenvolk</p>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
+						</header>
+					</div>
+				</article>
+				<article>
+					<img id="banner-img-4" src="images/c00005_d001_4.jpg" alt="" />
+					<div class="inner">
+						<header>
+							<p id="banner-text-4">Het bijenvolk</p>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
+						</header>
+					</div>
+				</article>
+				<article>
+					<img id="banner-img-5" src="images/c00005_d001_5.jpg" alt="" />
+					<div class="inner">
+						<header>
+							<p id="banner-text-5">Het bijenvolk</p>
+							<h2 style="font-size:1.2em;">In de buiten lucht</h2>
+						</header>
+					</div>
+				</article>
+			</section>
+ 
+<!-- Zero -->
+			<section id="zero" class="wrapper style3">
+				<div class="inner">
+					<header class="align-center">
+					    <div id="bee-advice-container" class="bee-advice-container" style="display:none;">
+					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
+					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
+					    </div>
+					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
+					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
+					    <p class="disclaimer">Uw vraag wordt doorgestuurd naar een AI-model (ChatGPT). De vraag wordt geanonimiseerd opgeslagen voor analyse en verbetering. Vermijd het invullen van persoonlijke gegevens.</p>
+						<button onclick="publishMessage()" id="theButton">Versturen</button>
+						<p id="llmStatus"></p>
+						<p id="waitingTime"></p>
+					    <h2>Ontvangen berichten:</h2>
+					    <ul id="messages"></ul>
+					</header>
+				</div>
+			</section>
+ 
+
+<!-- Informatie Section -->
+<section id="informatie" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content">
+          <header class="align-center">
+            <h3>Informatie over de imkerij</h3>
+          </header>
+          <p id="introductie-imkerij">Welkom op onze imkerij</p>
+          <p id="promotie-aanbod">Er is geen informatie over het aanbod van verkoop en opleidingen.</p>
+          <p id="activiteiten-en-agenda">Wij verzorgen de bijen het hele jaar rond</p>
+          <p id="bezoekers-informatie">Vraag naar de mogelijkheden om ons te bezoeken</p>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+<!-- Official website -->
+<section class="official-website-section">
+  <div class="official-website-container">
+    <h2 class="official-website-title">Bijenkast van sensoren voorzien?</h2>
+    <p class="official-website-subtitle">Bekijk onze laagdrempelige oplossing:</p>
+    <a href="https://www.smart-isolator.eu" class="official-website-link" target="_blank" rel="noopener">
+      smart-isolator
+    </a>
+  </div>
+</section>
+
+<!-- Agenda Section (table) -->
+<section id="agenda" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content">
+          <header class="align-center">
+            <h3>Agenda</h3>
+          </header>
+          <table id="agenda-table" class="agenda-table" style="margin: 0 auto; display: none;">
+            <thead>
+              <tr><th>Datum & Tijd</th><th>Omschrijving</th></tr>
+            </thead>
+            <tbody id="agenda-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+<!-- Gegevens Section -->
+<section id="gegevens" class="wrapper style2">
+  <div class="inner">
+    <header class="align-center">
+      <div class="box">
+        <div class="content" style="padding:0;">
+          <header class="align-center">
+            <h3>Gegevens van de imkerij</h3>
+          </header>
+          <div style="display: flex; flex-direction: column; gap: 0;">
+            <div style="margin:0; padding:0.1em 0;"><strong>Naam imker:</strong> <span id="naam-imker">Onbekend</span></div>
+<div style="margin:0; padding:0.1em 0;"><strong>Plaats:</strong> <span id="plaats">Onbekend</span></div>
+<div style="margin:0; padding:0.1em 0;"><strong>Website:</strong> <span id="website-link">Geen website</span></div>
+<div style="margin:0; padding:0.1em 0;"><strong>Contact:</strong> <span id="contact-gegevens">Geen contactgegevens</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+</section>
+
+
+
+<!-- Two -->
+			<section id="two" class="wrapper style2">
+  <div class="inner">
+	
+    <div class="grid-style">
+
+      <div>
+        <div class="box">
+			
+          <div class="image fit">
+            <div id="hiveGraph1" style="width: 100%; height: 500px;"></div>
+          </div>
+        </div>
+      </div>
+	
+
+      <div>
+        <div class="box">
+          <div class="image fit">
+            <div id="hiveGraph2" style="width: 100%; height: 500px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+		<!-- Four -->
+			<section id="four" class="wrapper style3">
+				<div class="inner">
+					<header class="align-center">
+						<p>Extra informatie</p>
+						<h2>Bekijk alle gegevens (afgezet tegen andere bijenkasten)</h2>
+					</header>
+				</div>
+			</section>
+
+		<!-- Five -->
+<section id="five" class="wrapper style2">
+  <div class="inner">
+	
+    <div class="grid-style">
+
+      <div>
+        <div class="box">
+			
+          <div class="image fit">
+            <div id="hiveGraph3" style="width: 100%; height: 500px;"></div>
+          </div>
+        </div>
+      </div>
+	
+
+      <div>
+        <div class="box">
+          <div class="image fit">
+            <div id="hiveGraph4" style="width: 100%; height: 500px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+		<script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+<script>
+  function createHiveGraph(graphId, dataType) {
+    fetch('hive_data.csv')
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.split('\n');
+        const headers = rows[0].split(',');
+        const dataRows = rows.slice(1);
+
+        const labels = [];
+        const avgData = [];
+        const upperData = [];
+        const lowerData = [];
+        const hiveData = [];
+
+        const datetimeIndex = headers.indexOf('datetime');
+        const avgIndex = headers.indexOf(
+          dataType === 'temperature' ? 'avg_temp_hive' : 
+          dataType === 'humidity' ? 'avg_humidity_hive' : 
+          dataType === 'co2' ? 'avg_co2' : 'avg_light_intensity'
+        );
+        const upperIndex = headers.indexOf(
+          dataType === 'temperature' ? 'upper_temp_hive' : 
+          dataType === 'humidity' ? 'upper_humidity_hive' : 
+          dataType === 'co2' ? 'upper_co2' : 'upper_light_intensity'
+        );
+        const lowerIndex = headers.indexOf(
+          dataType === 'temperature' ? 'lower_temp_hive' : 
+          dataType === 'humidity' ? 'lower_humidity_hive' : 
+          dataType === 'co2' ? 'lower_co2' : 'lower_light_intensity'
+        );
+        const hiveIndex = headers.indexOf(
+          dataType === 'temperature' ? 'c00005_d001_temp_hive' : 
+          dataType === 'humidity' ? 'c00005_d001_humidity_hive' : 
+          dataType === 'co2' ? 'c00005_d001_co2' : 'c00005_d001_light_intensity'
+        );
+
+        dataRows.forEach(row => {
+          const columns = row.split(',');
+          labels.push(new Date(columns[datetimeIndex]));
+          avgData.push(parseFloat(columns[avgIndex]));
+          upperData.push(parseFloat(columns[upperIndex]));
+          lowerData.push(parseFloat(columns[lowerIndex]));
+          hiveData.push(parseFloat(columns[hiveIndex]));
+        });
+
+        const traceHive = {
+          x: labels,
+          y: hiveData,
+          mode: 'lines',
+          name: dataType === 'temperature' ? 'Bijenkast temperatuur' : 
+                dataType === 'humidity' ? 'Bijenkast luchtvochtigheid' : 
+                dataType === 'co2' ? 'Bijenkast CO2' : 'Bijenkast lichtintensiteit',
+          line: { color: 'rgba(54, 162, 235, 1)' }
+        };
+
+        const traceAvg = {
+          x: labels,
+          y: avgData,
+          mode: 'lines',
+          name: dataType === 'temperature' ? 'Gemiddelde temperatuur' : 
+                dataType === 'humidity' ? 'Gemiddelde luchtvochtigheid' : 
+                dataType === 'co2' ? 'Gemiddelde CO2' : 'Gemiddelde lichtintensiteit',
+          line: { color: 'rgba(128, 128, 128, 0.8)' }
+        };
+
+        const traceUpper = {
+          x: labels,
+          y: upperData,
+          mode: 'lines',
+          name: dataType === 'temperature' ? 'Bovenste grens' : 
+                dataType === 'humidity' ? 'Bovenste grens luchtvochtigheid' : 
+                dataType === 'co2' ? 'Bovenste grens CO2' : 'Bovenste grens lichtintensiteit',
+          line: { color: 'transparent' },
+          fill: 'tonexty',
+          fillcolor: 'rgba(128, 128, 128, 0.2)'
+        };
+
+        const traceLower = {
+          x: labels,
+          y: lowerData,
+          mode: 'lines',
+          name: dataType === 'temperature' ? 'Onderste grens' : 
+                dataType === 'humidity' ? 'Onderste grens luchtvochtigheid' : 
+                dataType === 'co2' ? 'Onderste grens CO2' : 'Onderste grens lichtintensiteit',
+          line: { color: 'transparent' }
+        };
+
+        const layout = {
+          title: {
+            text: dataType === 'temperature' ? 'Binnen temperatuur' : 
+                  dataType === 'humidity' ? 'Binnen luchtvochtigheid' : 
+                  dataType === 'co2' ? 'Binnen CO2' : 'Buiten lichtintensiteit',
+            font: { size: 16 },
+            x: 0.5,
+            y: 3,
+            xanchor: 'center',
+            yanchor: 'top'
+          },
+          xaxis: { title: { text: 'tijd', font: { size: 14 } }, showgrid: true },
+          yaxis: { title: { text: dataType === 'temperature' ? 'binnen temperatuur (°C)' : 
+                            dataType === 'humidity' ? 'binnen luchtvochtigheid (%)' : 
+                            dataType === 'co2' ? 'binnen CO2 (ppm)' : 'buiten lichtintensiteit (lux)', font: { size: 14 } }, showgrid: true },
+          showlegend: true,
+          legend: { orientation: 'h', x: 0.5, y: -0.2, xanchor: 'center' },
+          responsive: true
+        };
+
+        Plotly.newPlot(graphId, [traceHive, traceAvg, traceLower, traceUpper], layout);
+      });
+  }
+
+  createHiveGraph('hiveGraph1', 'temperature');
+  createHiveGraph('hiveGraph2', 'humidity');
+  createHiveGraph('hiveGraph3', 'co2');
+  createHiveGraph('hiveGraph4', 'light');
+
+  window.addEventListener('resize', function() {
+    Plotly.relayout('hiveGraph1', {
+      width: document.getElementById('hiveGraph1').parentElement.offsetWidth,
+      height: 500
+    });
+    Plotly.relayout('hiveGraph2', {
+      width: document.getElementById('hiveGraph2').parentElement.offsetWidth,
+      height: 500
+    });
+    Plotly.relayout('hiveGraph3', {
+      width: document.getElementById('hiveGraph3').parentElement.offsetWidth,
+      height: 500
+    });
+    Plotly.relayout('hiveGraph4', {
+      width: document.getElementById('hiveGraph4').parentElement.offsetWidth,
+      height: 500
+    });
+  });
+</script>	
+ 
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+			<script>
+				const broker = "wss://uf07096f.ala.eu-central-1.emqxsl.com:8084/mqtt";
+				const clientId = "mqtt_test_client_" + Math.random().toString(16).substr(2, 8);
+				const options = {
+					clientId: clientId,
+					clean: true,
+					connectTimeout: 4000,
+					username: "qr_code_user", // Add your EMQX username
+					password: "qr_code_password", // Add your EMQX password
+					cleanSession: true,
+				};
+
+				let connectionTime;
+				let messageTime;
+				let waitingTime;
+				let startTime;
+				let waitingInterval;
+				let conversationHistory = [];
+
+				const client = mqtt.connect(broker, options);
+
+				client.on("connect", () => {
+					connectionTime = new Date().getTime();
+					console.log(`Connection Time is: ${connectionTime}`);
+
+					document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
+					console.log("Verbonden met de tussenman.");
+					// Subscribe to unique answer topic for this client
+					client.subscribe(`v000/c00005/d001/answer/${clientId}`,(err)=>{if(err)console.error("Subscribe error (answer):",err);});
+					// Subscribe to insights topic and display advice with bee
+					client.subscribe("v000/c00005/d001/hive_summary",(err)=>{if(err)console.error("Subscribe error (hive_summary):",err);});
+					// Subscribe to honey availability topic
+					client.subscribe("v000/c00005/d001/honey_availability",(err)=>{if(err)console.error("Subscribe error (honey_availability):",err);});
+				});
+
+				client.on("message", (topic, message) => {
+					messageTime = new Date().getTime();
+					console.log(`Tijd van bericht is: ${messageTime}`);
+
+					// Bee advice/insights if topic matches, always display retained message
+					if (topic === "v000/c00005/d001/hive_summary") {
+					    const adviceContainer = document.getElementById("bee-advice-container");
+					    const adviceText = document.getElementById("bee-advice-text");
+					    adviceText.textContent = message.toString();
+					    adviceContainer.style.display = "flex";
+					    return;
+					}
+
+					// Handle honey availability messages
+					if (topic === "v000/c00005/d001/honey_availability") {
+        const btn = document.getElementById("honey-jar-btn");
+        let data;
+        try { data = JSON.parse(message.toString()); } catch (e) { btn.style.display = "none"; return; }
+        const n = parseInt(data.amount, 10);
+        const price = parseFloat(data.price);
+        const weight = parseInt(data.weight, 10);
+        const pickup = data.pickup === "yes";
+        const delivery = data.delivery === "yes";
+        btn.setAttribute('data-honey-information', data.information || '');
+        if (!isNaN(n) && n > 0 && !isNaN(price) && price > 0 && !isNaN(weight) && weight > 0) {
+            // Two-line display
+            document.getElementById('honey-jar-amount').textContent = `${n} beschikbaar`;
+            document.getElementById('honey-jar-details').textContent = `€${price.toFixed(2)} p.s. (${weight}g)`;
+            btn.setAttribute('data-honey-price', price);
+            btn.setAttribute('data-honey-weight', weight);
+            btn.setAttribute('data-honey-pickup', pickup ? 'yes' : 'no');
+            btn.setAttribute('data-honey-delivery', delivery ? 'yes' : 'no');
+            btn.style.display = "inline-block";
+        } else {
+            btn.style.display = "none";
+        }
+        return;
+					}
+
+					// Handle Q&A messages for the unique answer topic
+					if (topic === `v000/c00005/d001/answer/${clientId}`) {
+						if ((messageTime - connectionTime) < 2000) {
+							console.log("Bericht is van een eerder gesprek. Negeer het!");
+							return;
+						}
+						// display the message 
+						console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
+						displayMessage(`${message.toString()}`);
+					}
+				});
+
+				function publishMessage() {
+					const userInput = document.getElementById("message").value;
+					if (userInput.length > 200) {
+						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
+						return;
+					}
+					// previous Q&A to history (max 6 turns)
+					const historyToSend = conversationHistory.slice(-6); // 3 Q&A pairs
+					const jsonPayload = {
+					    category: "question",
+					    cat_value: userInput,
+					    history: historyToSend,
+					    client_id: clientId
+					};
+					const jsonString = JSON.stringify(jsonPayload);
+					console.log("Sending:", jsonString);
+					client.publish("v000/c00005/d001/user", jsonString, (err) => {
+						if (err) console.error("Publish error:", err);
+					});
+
+					startTime = new Date().getTime();
+					waitingInterval = setInterval(updateWaitingTime, 1000);
+
+					document.getElementById('llmStatus').innerHTML = 'Vraag verstuurd! Verwerken van het antwoord...';
+					document.getElementById("theButton").setAttribute('disabled', 'disabled');
+				}
+
+				function displayMessage(msg) {
+					clearInterval(waitingInterval);
+					document.getElementById("theButton").removeAttribute('disabled');
+
+					document.getElementById('llmStatus').innerHTML = 'Antwoord ontvangen! U kunt nu een vervolg vraag stellen.';
+					document.getElementById('waitingTime').innerHTML = `Antwoord gegeven in ${waitingTime} seconden`;
+
+					const msgList = document.getElementById("messages");
+					const lastUserInput = document.getElementById("message").value;
+					const now = new Date();
+					const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+					// Create a Q&A card
+					const card = document.createElement("div");
+					card.className = "qa-card";
+					card.innerHTML = `
+					  <div class="qa-header">${timeString}</div>
+					  <div class="qa-pair">
+					    <div class="qa-user"><strong>Jij:</strong> ${escapeHtml(lastUserInput)}</div>
+					    <div class="qa-assistant"><strong>Assistent:</strong> ${escapeHtml(msg)}</div>
+					  </div>
+					`;
+
+					// Add the new Q&A card to the top of the list
+					if (msgList.firstChild) {
+						msgList.insertBefore(card, msgList.firstChild);
+					} else {
+						msgList.appendChild(card);
+					}
+
+					// Add last Q&A to conversationHistory for memory (as role/content)
+					if (lastUserInput && msg) {
+						conversationHistory.push({ role: "user", content: lastUserInput });
+						conversationHistory.push({ role: "assistant", content: msg });
+					}
+				}
+
+				// Helper to escape HTML for safe display
+				function escapeHtml(text) {
+					if (!text) return '';
+					return text.replace(/[&<>"']/g, function (c) {
+						return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[c] || c;
+					});
+				}
+
+				function updateWaitingTime() {
+					const currentTime = new Date().getTime();
+					waitingTime = Math.floor((currentTime - startTime) / 1000);
+					document.getElementById('waitingTime').innerHTML = `Verwerkingstijd: ${waitingTime} seconden`;
+
+					if (waitingTime > 60) {
+						clearInterval(waitingInterval);
+						document.getElementById('llmStatus').innerHTML = 'Het duurde te lang. Mogelijk wegens een technisch probleem.';
+						document.getElementById('waitingTime').innerHTML = 'Duur van 60 seconden overschreden.';
+						document.getElementById("theButton").removeAttribute('disabled');
+					}
+				}
+
+				// Modal logic for honey order
+				const honeyBtn = document.getElementById('honey-jar-btn');
+				const honeyModal = document.getElementById('honey-order-modal');
+				const honeyClose = document.getElementById('honey-order-modal-close');
+				const honeyForm = document.getElementById('honey-order-form');
+				const honeyConfirm = document.getElementById('honey-order-confirm');
+				const honeyReviewBtn = document.getElementById('honey-order-review');
+				const honeyReviewSummary = document.getElementById('honey-order-review-summary');
+
+				function updateDeliveryOptions() {
+				  const price = honeyBtn.getAttribute('data-honey-price');
+				  const pickup = honeyBtn.getAttribute('data-honey-pickup') === 'yes';
+				  const delivery = honeyBtn.getAttribute('data-honey-delivery') === 'yes';
+				  const deliverySelect = document.getElementById('honey-delivery');
+				  deliverySelect.innerHTML = '';
+				  if (pickup) {
+				    const opt = document.createElement('option');
+				    opt.value = 'pickup';
+				    opt.textContent = 'Afhalen bij de imker';
+				    deliverySelect.appendChild(opt);
+				  }
+				  if (delivery) {
+				    const opt = document.createElement('option');
+				    opt.value = 'delivery';
+				    opt.textContent = 'Bezorgen (adres invullen)';
+				    deliverySelect.appendChild(opt);
+				  }
+				}
+
+				function updateAddressFields() {
+				  let addressFields = document.getElementById('honey-address-fields');
+				  const deliverySelect = document.getElementById('honey-delivery');
+				  const nameInput = document.getElementById('honey-name');
+				  const emailInput = document.getElementById('honey-email');
+				  if (!addressFields) {
+				    addressFields = document.createElement('div');
+				    addressFields.id = 'honey-address-fields';
+				    addressFields.style.marginTop = '0.5em';
+				    addressFields.innerHTML = `
+				      <label for="honey-address">Adres:</label>
+				      <input type="text" id="honey-address" name="honey-address" maxlength="120" required>
+				      <label for="honey-postcode">Postcode:</label>
+				      <input type="text" id="honey-postcode" name="honey-postcode" maxlength="12" required>
+				      <label for="honey-city">Plaats:</label>
+				      <input type="text" id="honey-city" name="honey-city" maxlength="40" required>
+				    `;
+				    const form = document.getElementById('honey-order-form');
+				    form.insertBefore(addressFields, document.getElementById('honey-name'));
+				  }
+				  if (deliverySelect.value === 'delivery') {
+				    addressFields.style.display = 'block';
+				    addressFields.querySelectorAll('input').forEach(i => i.required = true);
+				  } else {
+				    addressFields.style.display = 'none';
+				    addressFields.querySelectorAll('input').forEach(i => i.required = false);
+				  }
+				}
+
+				if (honeyBtn) {
+				  honeyBtn.addEventListener('click', () => {
+				    // price and weight in modal if available
+				    const price = honeyBtn.getAttribute('data-honey-price');
+				    const weight = honeyBtn.getAttribute('data-honey-weight');
+				    const delivery = honeyBtn.getAttribute('data-honey-delivery') === 'yes';
+				    const priceInfo = document.querySelector('.honey-info');
+				    let infoText = '';
+				    if (price && priceInfo && weight) {
+				      infoText = `Heerlijke lokale honing, direct van de imker! Prijs: €${parseFloat(price).toFixed(2)} per pot (${weight}g).`;
+				      if (delivery) {
+				        infoText += '\nVerzendkosten indicatie: ca. €7 voor 1 pot (afhankelijk van adres en aantal)';
+				      }
+				      priceInfo.textContent = infoText;
+				    }
+				    // the information field from MQTT topic in a dedicated area
+				    const infoMsg = honeyBtn.getAttribute('data-honey-information') || '';
+				    let infoDiv = document.getElementById('honey-info-message');
+				    if (!infoDiv) {
+				      infoDiv = document.createElement('div');
+				      infoDiv.id = 'honey-info-message';
+				      infoDiv.style = 'margin-bottom:0.7em; color:#ffd600; font-weight:500;';
+				      honeyForm.parentNode.insertBefore(infoDiv, honeyForm);
+				    }
+				    infoDiv.textContent = infoMsg;
+				    // max attribute for amount input
+				    const amountInput = document.getElementById('honey-amount');
+				    const maxAmount = honeyBtn.textContent.match(/^(\d+)/);
+				    if (amountInput && maxAmount && maxAmount[1]) {
+				      amountInput.max = maxAmount[1];
+				    }
+				    updateDeliveryOptions();
+				    updateAddressFields();
+				    document.getElementById('honey-delivery').addEventListener('change', updateAddressFields);
+				    honeyModal.style.display = 'block';
+				    honeyConfirm.style.display = 'none';
+				    honeyForm.style.display = 'block';
+				    honeyReviewSummary.style.display = 'none';
+				    // reset total price display
+				    const total = document.getElementById('honey-total');
+				    if (total) total.textContent = '';
+				  });
+				}
+				if (honeyClose) {
+				  honeyClose.addEventListener('click', () => {
+				    honeyModal.style.display = 'none';
+				  });
+				}
+				window.addEventListener('click', (e) => {
+				  if (e.target === honeyModal) honeyModal.style.display = 'none';
+				});
+
+				honeyReviewBtn.addEventListener('click', function() {
+				  // gather form data
+				  const amount = parseInt(document.getElementById('honey-amount').value, 10);
+				  const delivery = document.getElementById('honey-delivery').value;
+				  const name = document.getElementById('honey-name').value;
+				  const email = document.getElementById('honey-email').value;
+				  const price = honeyBtn.getAttribute('data-honey-price');
+				  const weight = honeyBtn.getAttribute('data-honey-weight');
+				  let address = '', postcode = '', city = '';
+				  if (delivery === 'delivery') {
+				    address = document.getElementById('honey-address').value;
+				    postcode = document.getElementById('honey-postcode').value;
+				    city = document.getElementById('honey-city').value;
+				    if (!address || !postcode || !city) return;
+				  }
+				  // Validate required fields
+				  if (!amount || amount < 1 || !price || !weight) return;
+				  if (!name || name.trim() === '') {
+				    alert('Naam is verplicht.');
+				    return;
+				  }
+				  if (!email || email.trim() === '') {
+				    alert('E-mailadres is verplicht.');
+				    return;
+				  }
+				  const total = (amount * parseFloat(price)).toFixed(2);
+				  let summary = `<strong>Bevestig uw bestelling:</strong><br>`;
+				  summary += `Aantal potten: <strong>${amount}</strong><br>`;
+				  summary += `Prijs per pot: <strong>€${parseFloat(price).toFixed(2)}</strong><br>`;
+				  summary += `Gewicht per pot: <strong>${weight}g</strong><br>`;
+				  summary += `Totaal: <strong>€${total}</strong><br>`;
+				  summary += `Afleveroptie: <strong>${delivery === 'pickup' ? 'Afhalen bij de imker' : 'Bezorgen'}</strong><br>`;
+				  if (delivery === 'delivery') {
+				    summary += `Adres: <strong>${address}, ${postcode}, ${city}</strong><br>`;
+				  }
+				  summary += `Naam: <strong>${name}</strong><br>`;
+				  summary += `E-mail: <strong>${email}</strong><br>`;
+				  summary += `<button id='honey-order-confirm-btn'>Bestelling bevestigen</button>`;
+				  honeyReviewSummary.innerHTML = summary;
+				  honeyReviewSummary.style.display = 'block';
+				  honeyForm.style.display = 'none';
+				  honeyConfirm.style.display = 'none';
+				  // confirm button handler
+				  setTimeout(() => {
+				    const confirmBtn = document.getElementById('honey-order-confirm-btn');
+				    if (confirmBtn) {
+				      confirmBtn.onclick = function() {
+				        const order = { amount, delivery, name, email };
+				        if (delivery === 'delivery') {
+				          order.address = address;
+				          order.postcode = postcode;
+				          order.city = city;
+				        }
+				        order.weight = weight;
+				        client.publish('v000/c00005/d001/honey_order', JSON.stringify(order), (err) => {
+				          if (err) {
+				            honeyConfirm.textContent = 'Er is een fout opgetreden bij het versturen van uw bestelling. Probeer het later opnieuw.';
+				            honeyConfirm.style.color = '#e53935';
+				          } else {
+				            honeyConfirm.textContent = 'Uw bestelling is verstuurd naar de imker! U ontvangt spoedig een reactie.';
+				            honeyConfirm.style.color = '#388e3c';
+				            honeyForm.style.display = 'none';
+				            honeyReviewSummary.style.display = 'none';
+				          }
+				          honeyConfirm.style.display = 'block';
+				        });
+				      };
+				    }
+				  }, 100);
+				});
+			</script>
+
+ 
+		<footer class="site-disclaimer" style="text-align:center; color:#888; font-size:0.95em; margin:2em 0 1em 0;">
+  <p>
+    Smart-Isolator controleert geplaatste inhoud, maar is niet verantwoordelijk voor de inhoud die door imkers wordt gepubliceerd.<br>
+  </p>
+  <p>Bedankt voor Uw bezoek</p>
+</footer>
+<script>
+// Wait for DOM to be ready, then load JSON data
+document.addEventListener('DOMContentLoaded', function() {
+  // Define helper function first
+  function updateElement(id, value) {
+    var el = document.getElementById(id);
+    if (el && value && value.trim()) {
+      el.textContent = value;
+      console.log('Updated ' + id + ':', value);
+    }
+  }
+  
+  var hiveId = 'c00005_d001';
+  var jsonUrl = 'https://smart-isolator.github.io/hive_info/' + hiveId + '.json?t=' + Date.now();
+  
+  console.log('=== LOADING JSON DATA ===');
+  console.log('hiveId:', hiveId);
+  console.log('jsonUrl:', jsonUrl);
+  
+  fetch(jsonUrl)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      console.log('JSON loaded:', data);
+      
+      // Update all data fields
+      updateElement('naam-imker', data.naam_imker);
+      updateElement('plaats', data.plaats);
+      updateElement('contact-gegevens', data.contact_gegevens);
+      updateElement('introductie-imkerij', data.introductie_imkerij);
+      updateElement('promotie-aanbod', data.promotie_aanbod);
+      updateElement('activiteiten-en-agenda', data.activiteiten_en_agenda);
+      updateElement('bezoekers-informatie', data.bezoekers_informatie);
+      
+      // Update banners
+      for (var i = 1; i <= 5; i++) {
+        updateElement('banner-text-' + i, data['banner' + i] || 'Het bijenvolk');
+      }
+      
+      // Update website link
+      var websiteEl = document.getElementById('website-link');
+      if (websiteEl && data.website && data.website !== 'Geen website') {
+        websiteEl.innerHTML = '<a href="' + data.website + '" target="_blank">Link</a>';
+      }
+      
+      // Update place in banners
+      if (data.plaats) {
+        var bannerLocs = document.querySelectorAll('h2');
+        for (var j = 0; j < bannerLocs.length; j++) {
+          if (bannerLocs[j].textContent === 'In de buiten lucht') {
+            bannerLocs[j].textContent = data.plaats;
+          }
+        }
+      }
+      
+      // Update agenda
+      var agenda = [];
+      for (var i = 1; i <= 5; i++) {
+        var text = data['agenda' + i + '_text'];
+        var time = data['agenda' + i + '_time'];
+        if (text && text.trim() && time && time.trim()) {
+          agenda.push({ text: text, time: time });
+        }
+      }
+      
+      var tbody = document.getElementById('agenda-tbody');
+      if (agenda.length > 0 && tbody) {
+        tbody.innerHTML = '';
+        agenda.forEach(function(item) {
+          var tr = document.createElement('tr');
+          var tdTime = document.createElement('td');
+          tdTime.textContent = item.time;
+          var tdText = document.createElement('td');
+          tdText.textContent = item.text;
+          tr.appendChild(tdTime);
+          tr.appendChild(tdText);
+          tbody.appendChild(tr);
+        });
+        document.getElementById('agenda-table').style.display = 'table';
+      }
+      
+      console.log('Data update completed');
+      
+      // Update page title with imker name
+      setTimeout(function() {
+        if (data.naam_imker) {
+          document.title = 'De bijenkast van binnen: ' + data.naam_imker;
+        }
+        
+        // Update honey modal title
+        var honeyTitle = document.getElementById('honey-order-title');
+        if (honeyTitle && data.naam_imker) {
+          honeyTitle.textContent = 'Honing bestellen bij ' + data.naam_imker;
+        }
+      }, 100);
+    })
+    .catch(function(err) {
+      console.error('JSON load failed:', err.message);
+      // Only show alert for non-404 errors (404 means no JSON file for this hive)
+      if (!err.message.includes('404')) {
+        alert('Data loading failed: ' + err.message);
+      }
+    });
+});
+</script>
+
+<div class="thermometer-banner" style="position: fixed; top: 100px; left: 20px; z-index: 1000;">
+  <div class="thermometer">
+    <div class="thermometer-tube">
+      <div id="thermometer-fluid-tube" class="thermometer-fluid-tube"></div>
+      <div id="thermometer-goal" class="thermometer-goal"></div>
+    </div>
+    <div class="thermometer-bulb">
+      <div id="thermometer-fluid-bulb" class="thermometer-fluid-bulb"></div>
+    </div>
+    <div id="thermometer-value" class="thermometer-value"></div>
+  </div>
+</div>
+
+<style>
+.thermometer {
+  width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.thermometer-tube {
+  width: 20px;
+  height: 90px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.thermometer-fluid-tube {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%;
+  background: red;
+  border-radius: 10px 10px 4px 4px;
+  z-index: 1;
+  transition: height 0.4s;
+}
+
+.thermometer-goal {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-top: 2px dashed #228B22;
+  z-index: 2;
+}
+
+.thermometer-bulb {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  margin-top: -8px;
+  overflow: hidden;
+}
+
+.thermometer-fluid-bulb {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: red;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.4s;
+}
+
+.thermometer-value {
+  margin-top: 5px;
+  font-weight: bold;
+  color: #000;
+  background: #fff9;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 5;
+  text-align: center;
+}
+</style>
+
+<script>
+async function updateThermometer() {
+  const hiveId = "c00005_d001_temp_hive"; // Replace with your value
+  const csvUrl = "hive_data.csv";
+
+  // --- Settings ---
+  const minTemp = 0;
+  const maxTemp = 50;
+  const goalTemp = 35;
+  // -----------------
+
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split("\n").filter(row => row.trim() !== "");
+    const headers = rows[0].split(",");
+    const hiveIndex = headers.indexOf(hiveId);
+
+    let latestRow;
+    for (let i = rows.length - 1; i > 0; i--) {
+      const row = rows[i].split(",");
+      if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
+        latestRow = row;
+        break;
+      }
+    }
+
+    if (!latestRow) return;
+
+    const temperature = parseFloat(latestRow[hiveIndex]);
+    const tubeHeight = 90; // px, same as CSS .thermometer-tube height
+
+    // --- FLUID HEIGHT CALC ---
+    let percent = Math.min(Math.max((temperature - minTemp) / (maxTemp - minTemp), 0), 1);
+    let fluidTubeHeight = Math.round(percent * tubeHeight);
+
+    // --- GOAL POSITION ---
+    let goalPercent = Math.min(Math.max((goalTemp - minTemp) / (maxTemp - minTemp), 0), 1);
+    let goalPosition = Math.round(goalPercent * tubeHeight);
+
+    // Fill the bulb if any temp > 0
+    document.getElementById("thermometer-fluid-bulb").style.opacity = percent > 0 ? 1 : 0.15;
+
+    // Fluid tube height
+    document.getElementById("thermometer-fluid-tube").style.height = `${fluidTubeHeight}px`;
+
+    // Goal indicator position (from bottom)
+    document.getElementById("thermometer-goal").style.bottom = `${goalPosition-1}px`;
+
+    // Show value
+    document.getElementById("thermometer-value").textContent = `${temperature.toFixed(1)}°C`;
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+updateThermometer();
+</script>
+<div class="droplet-banner" style="position: fixed; top: 100px; right: 20px; z-index: 1000;">
+  <div class="droplet">
+    <svg id="droplet-svg" viewBox="0 0 1024 1024" width="60" height="80" style="display: block;">
+      <!-- One single closed path for outline and clip -->
+      <defs>
+        <clipPath id="droplet-clip">
+          <path id="droplet-shape"
+                d="M512,34
+                  C512,34 189,519 189,691
+                  C189,860 341,990 512,990
+                  C683,990 835,860 835,691
+                  C835,519 512,34 512,34
+                  Z"/>
+        </clipPath>
+      </defs>
+      <!-- Fill shape -->
+      <rect id="droplet-fill" x="0" y="0" width="1024" height="1024"
+            fill="#2196f3" clip-path="url(#droplet-clip)" />
+      <!-- Droplet outline (black) -->
+      <path d="M512,34
+                C512,34 189,519 189,691
+                C189,860 341,990 512,990
+                C683,990 835,860 835,691
+                C835,519 512,34 512,34
+                Z"
+            fill="none" stroke="#111" stroke-width="24"/>
+      <!-- 50% bar -->
+      <line id="droplet-bar" x1="250" x2="774" y1="0" y2="0" stroke="#228B22" stroke-width="18" stroke-dasharray="18,12" />
+    </svg>
+    <div id="droplet-value" class="droplet-value"></div>
+  </div>
+</div>
+
+<style>
+.droplet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.droplet-value {
+  margin-top: 8px;
+  font-weight: bold;
+  color: #000;
+  background: #fff9;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 5;
+  text-align: center;
+}
+</style>
+
+<script>
+async function updateDroplet() {
+  const hiveId = "c00005_d001_humidity_hive"; // Replace with your value
+  const csvUrl = "hive_data.csv";
+
+  // --- Settings ---
+  const minHum = 0;
+  const maxHum = 100;
+  const barPercent = 0.5; // 50%
+  // -----------------
+
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split("\n").filter(row => row.trim() !== "");
+    const headers = rows[0].split(",");
+    const hiveIndex = headers.indexOf(hiveId);
+
+    let latestRow;
+    for (let i = rows.length - 1; i > 0; i--) {
+      const row = rows[i].split(",");
+      if (row[hiveIndex] && !isNaN(parseFloat(row[hiveIndex]))) {
+        latestRow = row;
+        break;
+      }
+    }
+    if (!latestRow) return;
+
+    const humidity = parseFloat(latestRow[hiveIndex]);
+    let percent = Math.min(Math.max((humidity - minHum) / (maxHum - minHum), 0), 1);
+    let fillHeight = Math.round(percent * 1024);
+
+    // Fill rect
+    document.getElementById("droplet-fill").setAttribute("y", 1024 - fillHeight);
+    document.getElementById("droplet-fill").setAttribute("height", fillHeight);
+
+    // 50% bar
+    const barY = 1024 - Math.round(barPercent * 1024);
+    document.getElementById("droplet-bar").setAttribute("y1", barY);
+    document.getElementById("droplet-bar").setAttribute("y2", barY);
+
+    // Only one value box
+    document.getElementById("droplet-value").textContent = `${humidity.toFixed(1)}%`;
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+updateDroplet();
+
+</script>
+
+<script>
+// Auto-refresh functionality
+(function() {
+  const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+  let lastRefreshTime = Date.now();
+  let refreshTimer = null;
+  let isPageVisible = !document.hidden;
+
+  function refreshPage() {
+    console.log('Auto-refreshing page...');
+    window.location.reload();
+  }
+
+  function startRefreshTimer() {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+    refreshTimer = setTimeout(() => {
+      lastRefreshTime = Date.now();
+      refreshPage();
+    }, REFRESH_INTERVAL);
+  }
+
+  function handleVisibilityChange() {
+    const wasVisible = isPageVisible;
+    isPageVisible = !document.hidden;
+    
+    if (!wasVisible && isPageVisible) {
+      // Page became visible again
+      const timeSinceLastRefresh = Date.now() - lastRefreshTime;
+      
+      if (timeSinceLastRefresh >= REFRESH_INTERVAL) {
+        // It's been more than 10 minutes since last refresh, refresh immediately
+        console.log('Page became visible after 10+ minutes, refreshing...');
+        lastRefreshTime = Date.now();
+        refreshPage();
+      } else {
+        // Schedule next refresh based on remaining time
+        const remainingTime = REFRESH_INTERVAL - timeSinceLastRefresh;
+        if (refreshTimer) {
+          clearTimeout(refreshTimer);
+        }
+        refreshTimer = setTimeout(() => {
+          lastRefreshTime = Date.now();
+          refreshPage();
+        }, remainingTime);
+      }
+    } else if (wasVisible && !isPageVisible) {
+      // Page became hidden, clear the timer to save resources
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+  }
+
+  // Start the initial timer
+  if (isPageVisible) {
+    startRefreshTimer();
+  }
+
+  // Listen for visibility changes
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Also listen for window focus/blur as a backup
+  window.addEventListener('focus', () => {
+    if (document.hidden === false) {
+      handleVisibilityChange();
+    }
+  });
+
+  // Store the last refresh time in sessionStorage to persist across page loads
+  if (sessionStorage.getItem('lastRefreshTime')) {
+    lastRefreshTime = parseInt(sessionStorage.getItem('lastRefreshTime'), 10);
+  }
+  sessionStorage.setItem('lastRefreshTime', lastRefreshTime.toString());
+})();
+</script>
+
+	</body>
+</html>
