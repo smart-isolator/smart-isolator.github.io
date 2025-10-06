@@ -223,9 +223,14 @@
         Promise.all(promises).then(cards => {
             const validCards = cards.filter(card => card !== null);
             
+            console.log('Total promises:', promises.length);
+            console.log('Valid cards found:', validCards.length);
+            console.log('Valid cards:', validCards.map(c => c.hiveId));
+            
             if (validCards.length > 0) {
                 // Reorder cards: current hive first (if specified)
                 const orderedCards = reorderCards(validCards, currentHive);
+                console.log('Ordered cards count:', orderedCards.length);
                 grid.innerHTML = orderedCards.join('');
                 
                 // Add markers to map
