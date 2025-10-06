@@ -107,13 +107,29 @@
     .error-message {
         color: #d32f2f;
     }
+    
+    .location-card-current {
+        border: 2px solid #4CAF50;
+        background: #f8fff8;
+    }
+    
+    .current-badge {
+        background: #4CAF50;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
     </style>
 
     <!-- JavaScript -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Server injects hive list
-        const hiveIds = ["c00003_d001", "c00004_d001", "c00001_d021", "c00001_d001", "c00005_d001", "c00002_d001"];
+        const hiveIds = ["c00004_d001", "c00001_d021", "c00001_d001", "c00005_d001", "c00002_d001", "c00003_d001"];
         
         // Check if coming from a specific hive
         const urlParams = new URLSearchParams(window.location.search);
@@ -192,6 +208,25 @@
             isCurrent: isCurrent,
             hiveId: hiveId
         };
+    }
+
+    function reorderCards(cards, currentHive) {
+        if (!currentHive) {
+            return cards.map(card => card.html);
+        }
+        
+        // Separate current hive from others
+        const currentCard = cards.find(card => card.isCurrent);
+        const otherCards = cards.filter(card => !card.isCurrent);
+        
+        // Return current card first, then others
+        const orderedCards = [];
+        if (currentCard) {
+            orderedCards.push(currentCard.html);
+        }
+        otherCards.forEach(card => orderedCards.push(card.html));
+        
+        return orderedCards;
     }
 
     function escapeHtml(text) {
