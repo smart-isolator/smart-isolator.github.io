@@ -273,17 +273,21 @@
         
         for (const card of validCards) {
             const data = card.data;
-            const postcode = data.postcode || data.plaats;
+            // ONLY use postal code, not name/place
+            const postcode = data.postcode;
             
-            if (postcode) {
+            if (postcode && postcode.length >= 4) {
                 try {
-                    const coords = await geocodeLocation(postcode);
+                    // Extract first 4 digits from postal code
+                    const postalCode4 = postcode.toString().substring(0, 4);
+                    const coords = await geocodePostalCode(postalCode4);
+                    
                     if (coords) {
-                        const marker = createMarker(coords, card);
+                        const marker = createSimpleMarker(coords, card);
                         markersToAdd.push(marker);
                     }
                 } catch (error) {
-                    console.warn(`Failed to geocode ${postcode}:`, error);
+                    console.warn(`Failed to geocode postal code ${postcode}:`, error);
                 }
             }
         }
@@ -301,65 +305,51 @@
         }
     }
     
-    async function geocodeLocation(location) {
+    async function geocodePostalCode(postalCode4) {
         try {
-            // Use Nominatim (OpenStreetMap) geocoding service
-            const query = encodeURIComponent(`${location}, Netherlands`);
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+            // Use only 4-digit postal code for Netherlands
+            const query = encodeURIComponent(`${postalCode4} Netherlands`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=nl&limit=1`);
             const results = await response.json();
             
             if (results && results.length > 0) {
                 return [parseFloat(results[0].lat), parseFloat(results[0].lon)];
             }
         } catch (error) {
-            console.warn('Geocoding error:', error);
+            console.warn('Postal code geocoding error:', error);
         }
         return null;
     }
     
-    function createMarker(coords, card) {
+    function createSimpleMarker(coords, card) {
         const data = card.data;
         const name = data.naam_imker || 'Onbekende Imker';
-        const place = data.plaats || 'Onbekende Locatie';
         const hiveId = card.hiveId;
+        const postcode = data.postcode;
         
-        // Create custom marker icon
+        // Create simple marker
         const isCurrentHive = card.isCurrent;
         const markerColor = isCurrentHive ? '#4CAF50' : '#ff6b35';
         
         const marker = L.marker(coords, {
             icon: L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="background: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
+                html: `<div style="background: ${markerColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
             })
         });
         
-        // Create popup content
+        // Simple popup with postal code info
         const popupContent = `
             <div class="map-popup">
                 <h4>🐝 ${escapeHtml(name)}</h4>
-                <p>📍 ${escapeHtml(place)}</p>
-                ${isCurrentHive ? '<p style="color: #4CAF50; font-weight: bold;">🔍 Huidige Bezichtiging</p>' : ''}
+                <p>� ${escapeHtml(postcode)}</p>
                 <a href="index_${hiveId}.html" class="popup-button">Bezoek Bijenkast</a>
             </div>
         `;
         
         marker.bindPopup(popupContent);
-        
-        // Add click handler to highlight corresponding card
-        marker.on('click', function() {
-            const cardElement = document.querySelector(`[data-hive="${hiveId}"]`);
-            if (cardElement) {
-                cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                cardElement.style.transform = 'scale(1.02)';
-                setTimeout(() => {
-                    cardElement.style.transform = '';
-                }, 1000);
-            }
-        });
-        
         return marker;
     }
 
