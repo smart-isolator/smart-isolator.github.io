@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <!-- Header -->
@@ -30,6 +32,9 @@
                 <h2>Alle Bijenkasten in Nederland</h2>
                 <p>Ontdek imkers en hun bijenkasten</p>
             </header>
+            
+            <!-- Interactive Map -->
+            <div id="map" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
             
             <div id="locations-grid" class="locations-grid">
                 <p>Locaties laden...</p>
@@ -123,13 +128,48 @@
         margin-bottom: 1rem;
         display: inline-block;
     }
+    
+    /* Map styling */
+    #map {
+        z-index: 1;
+    }
+    
+    .map-popup h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+    
+    .map-popup p {
+        margin: 0.2rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .map-popup .popup-button {
+        background: #4CAF50;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
     </style>
 
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <!-- JavaScript -->
     <script>
+    let map;
+    let markers = [];
+    
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        initializeMap();
+        
         // Server injects hive list
-        const hiveIds = ["c00001_d001", "c00005_d001", "c00002_d001", "c00004_d001", "c00001_d021", "c00003_d001"];
+        const hiveIds = ["c00001_d001"];
         
         // Check if coming from a specific hive
         const urlParams = new URLSearchParams(window.location.search);
@@ -137,6 +177,16 @@
         
         loadAllLocations(hiveIds, currentHive);
     });
+    
+    function initializeMap() {
+        // Initialize map centered on Netherlands
+        map = L.map('map').setView([52.1326, 5.2913], 7);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+    }
 
     function loadAllLocations(hiveIds, currentHive = null) {
         const grid = document.getElementById('locations-grid');
@@ -177,6 +227,9 @@
                 // Reorder cards: current hive first (if specified)
                 const orderedCards = reorderCards(validCards, currentHive);
                 grid.innerHTML = orderedCards.join('');
+                
+                // Add markers to map
+                addMarkersToMap(validCards);
             } else {
                 grid.innerHTML = '<p class="error-message">Geen locatie-informatie beschikbaar.</p>';
             }
@@ -206,8 +259,108 @@
                 </div>
             `,
             isCurrent: isCurrent,
-            hiveId: hiveId
+            hiveId: hiveId,
+            data: data  // Include data for map markers
         };
+    }
+
+    async function addMarkersToMap(validCards) {
+        // Clear existing markers
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+        
+        const markersToAdd = [];
+        
+        for (const card of validCards) {
+            const data = card.data;
+            const postcode = data.postcode || data.plaats;
+            
+            if (postcode) {
+                try {
+                    const coords = await geocodeLocation(postcode);
+                    if (coords) {
+                        const marker = createMarker(coords, card);
+                        markersToAdd.push(marker);
+                    }
+                } catch (error) {
+                    console.warn(`Failed to geocode ${postcode}:`, error);
+                }
+            }
+        }
+        
+        // Add all markers and fit map bounds
+        if (markersToAdd.length > 0) {
+            markersToAdd.forEach(marker => {
+                markers.push(marker);
+                marker.addTo(map);
+            });
+            
+            // Fit map to show all markers
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    }
+    
+    async function geocodeLocation(location) {
+        try {
+            // Use Nominatim (OpenStreetMap) geocoding service
+            const query = encodeURIComponent(`${location}, Netherlands`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+            const results = await response.json();
+            
+            if (results && results.length > 0) {
+                return [parseFloat(results[0].lat), parseFloat(results[0].lon)];
+            }
+        } catch (error) {
+            console.warn('Geocoding error:', error);
+        }
+        return null;
+    }
+    
+    function createMarker(coords, card) {
+        const data = card.data;
+        const name = data.naam_imker || 'Onbekende Imker';
+        const place = data.plaats || 'Onbekende Locatie';
+        const hiveId = card.hiveId;
+        
+        // Create custom marker icon
+        const isCurrentHive = card.isCurrent;
+        const markerColor = isCurrentHive ? '#4CAF50' : '#ff6b35';
+        
+        const marker = L.marker(coords, {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        });
+        
+        // Create popup content
+        const popupContent = `
+            <div class="map-popup">
+                <h4>🐝 ${escapeHtml(name)}</h4>
+                <p>📍 ${escapeHtml(place)}</p>
+                ${isCurrentHive ? '<p style="color: #4CAF50; font-weight: bold;">🔍 Huidige Bezichtiging</p>' : ''}
+                <a href="index_${hiveId}.html" class="popup-button">Bezoek Bijenkast</a>
+            </div>
+        `;
+        
+        marker.bindPopup(popupContent);
+        
+        // Add click handler to highlight corresponding card
+        marker.on('click', function() {
+            const cardElement = document.querySelector(`[data-hive="${hiveId}"]`);
+            if (cardElement) {
+                cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cardElement.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    cardElement.style.transform = '';
+                }, 1000);
+            }
+        });
+        
+        return marker;
     }
 
     function reorderCards(cards, currentHive) {
