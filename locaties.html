@@ -1,43 +1,200 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Locaties</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-	</head>
-	<body>
+<head>
+    <title>Bijenkasten Locaties - Nederland</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header id="header" class="alt">
+        <div class="logo"><a href="#"><span>Locaties</span></a></div>
+        <a href="#menu">Menu</a>
+    </header>
 
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="locaties.html">Locaties</a></li>
+            <li><a href="bijen.html">Bijen</a></li>
+            <li><a href="vegetatie.html">Vegetatie</a></li>
+            <li><a href="information.html">Informatie</a></li>
+        </ul>
+    </nav>
 
-		<!-- Banner -->
-			<section class="banner full">
-				<article>
-					<img src="images/bg.gif" alt="" />
-					<div class="inner">
-						<header>
-							<p>Den haag imker vereniging</p>
-							<p>Den haag imkerij Overbosch</p>
-							<p>Oud-Loosdrecht Imkerij t'schuurtje</p>
-							<p>Oud-Bussum SAS Institute B.V.</p>
-							<p>Apeldoorn Imker Henk</p>
-							<p>Binnenkort vind U hier mee informatie over alle bijenkasten.</p>
-              						<p>De data kunt U hier vinden: https://github.com/smart-isolator/data</p>
-						</header>
-					</div>
-				</article>
-			</section>
+    <!-- Main Content -->
+    <section id="locations" class="wrapper style2">
+        <div class="inner">
+            <header class="align-center">
+                <h2>Alle Bijenkasten in Nederland</h2>
+                <p>Ontdek imkers en hun bijenkasten</p>
+            </header>
+            
+            <div id="locations-grid" class="locations-grid">
+                <p>Locaties laden...</p>
+            </div>
+        </div>
+    </section>
 
-		
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-			<script>
-				// Initialize a mqtt variable globally
-				console.log(mqtt)
-			</script>
-	</body>
+    <!-- Styling -->
+    <style>
+    .locations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .location-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .location-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .location-card h3 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+        font-size: 1.2rem;
+    }
+    
+    .location-place {
+        color: #666;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .location-description {
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        max-height: 4rem;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+    
+    .visit-button {
+        background: #4CAF50;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+    
+    .visit-button:hover {
+        background: #45a049;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .loading-message, .error-message {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+    
+    .error-message {
+        color: #d32f2f;
+    }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Server injects hive list
+        const hiveIds = ["c00003_d001", "c00004_d001", "c00001_d021", "c00001_d001", "c00005_d001", "c00002_d001"];
+        loadAllLocations(hiveIds);
+    });
+
+    function loadAllLocations(hiveIds) {
+        const grid = document.getElementById('locations-grid');
+        grid.innerHTML = '<p class="loading-message">Locaties laden...</p>';
+        
+        if (!hiveIds || hiveIds.length === 0) {
+            grid.innerHTML = '<p class="error-message">Geen bijenkasten gevonden.</p>';
+            return;
+        }
+        
+        console.log('Loading locations for hives:', hiveIds);
+        
+        const promises = hiveIds.map(hiveId => {
+            const jsonUrl = `https://smart-isolator.github.io/hive_info/${hiveId}.json?t=${Date.now()}`;
+            
+            return fetch(jsonUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn(`Failed to load data for ${hiveId}: ${response.status}`);
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => data ? createLocationCard(hiveId, data) : null)
+                .catch(error => {
+                    console.warn(`Error loading data for ${hiveId}:`, error);
+                    return null;
+                });
+        });
+        
+        Promise.all(promises).then(cards => {
+            const validCards = cards.filter(card => card !== null);
+            
+            if (validCards.length > 0) {
+                grid.innerHTML = validCards.join('');
+            } else {
+                grid.innerHTML = '<p class="error-message">Geen locatie-informatie beschikbaar.</p>';
+            }
+        });
+    }
+
+    function createLocationCard(hiveId, data) {
+        const name = data.naam_imker || 'Onbekende Imker';
+        const place = data.plaats || 'Onbekende Locatie';
+        const description = data.introductie_imkerij || 'Geen beschrijving beschikbaar';
+        
+        // Truncate description to prevent overly long cards
+        const shortDescription = description.length > 150 ? 
+            description.substring(0, 150) + '...' : description;
+        
+        return `
+            <div class="location-card">
+                <h3>${escapeHtml(name)}</h3>
+                <p class="location-place">📍 ${escapeHtml(place)}</p>
+                <p class="location-description">${escapeHtml(shortDescription)}</p>
+                <a href="index_${hiveId}.html" class="visit-button">Bezoek Bijenkast</a>
+            </div>
+        `;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    </script>
+
+    <!-- Footer -->
+    <footer class="site-disclaimer" style="text-align:center; color:#888; font-size:0.95em; margin:2em 0 1em 0;">
+        <p>Smart-Isolator - Bijenkasten Locaties</p>
+        <p>Ontdek imkers en hun bijenkasten door heel Nederland</p>
+    </footer>
+
+    <!-- Include same scripts as main template -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
 </html>
