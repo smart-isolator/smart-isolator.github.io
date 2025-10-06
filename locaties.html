@@ -113,11 +113,16 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Server injects hive list
-        const hiveIds = ["c00001_d001", "c00005_d001", "c00002_d001", "c00003_d001", "c00004_d001", "c00001_d021"];
-        loadAllLocations(hiveIds);
+        const hiveIds = ["c00003_d001", "c00004_d001", "c00001_d021", "c00001_d001", "c00005_d001", "c00002_d001"];
+        
+        // Check if coming from a specific hive
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentHive = urlParams.get('from');
+        
+        loadAllLocations(hiveIds, currentHive);
     });
 
-    function loadAllLocations(hiveIds) {
+    function loadAllLocations(hiveIds, currentHive = null) {
         const grid = document.getElementById('locations-grid');
         grid.innerHTML = '<p class="loading-message">Locaties laden...</p>';
         
@@ -127,6 +132,9 @@
         }
         
         console.log('Loading locations for hives:', hiveIds);
+        if (currentHive) {
+            console.log('Current hive highlighted:', currentHive);
+        }
         
         const promises = hiveIds.map(hiveId => {
             const jsonUrl = `https://smart-isolator.github.io/hive_info/${hiveId}.json?t=${Date.now()}`;
@@ -139,7 +147,7 @@
                     }
                     return response.json();
                 })
-                .then(data => data ? createLocationCard(hiveId, data) : null)
+                .then(data => data ? createLocationCard(hiveId, data, hiveId === currentHive) : null)
                 .catch(error => {
                     console.warn(`Error loading data for ${hiveId}:`, error);
                     return null;
@@ -150,14 +158,16 @@
             const validCards = cards.filter(card => card !== null);
             
             if (validCards.length > 0) {
-                grid.innerHTML = validCards.join('');
+                // Reorder cards: current hive first (if specified)
+                const orderedCards = reorderCards(validCards, currentHive);
+                grid.innerHTML = orderedCards.join('');
             } else {
                 grid.innerHTML = '<p class="error-message">Geen locatie-informatie beschikbaar.</p>';
             }
         });
     }
 
-    function createLocationCard(hiveId, data) {
+    function createLocationCard(hiveId, data, isCurrent = false) {
         const name = data.naam_imker || 'Onbekende Imker';
         const place = data.plaats || 'Onbekende Locatie';
         const description = data.introductie_imkerij || 'Geen beschrijving beschikbaar';
@@ -166,14 +176,22 @@
         const shortDescription = description.length > 150 ? 
             description.substring(0, 150) + '...' : description;
         
-        return `
-            <div class="location-card">
-                <h3>${escapeHtml(name)}</h3>
-                <p class="location-place">📍 ${escapeHtml(place)}</p>
-                <p class="location-description">${escapeHtml(shortDescription)}</p>
-                <a href="index_${hiveId}.html" class="visit-button">Bezoek Bijenkast</a>
-            </div>
-        `;
+        const currentClass = isCurrent ? ' location-card-current' : '';
+        const currentBadge = isCurrent ? '<div class="current-badge">🔍 Huidige Bezichtiging</div>' : '';
+        
+        return {
+            html: `
+                <div class="location-card${currentClass}" data-hive="${hiveId}">
+                    ${currentBadge}
+                    <h3>${escapeHtml(name)}</h3>
+                    <p class="location-place">📍 ${escapeHtml(place)}</p>
+                    <p class="location-description">${escapeHtml(shortDescription)}</p>
+                    <a href="index_${hiveId}.html" class="visit-button">Bezoek Bijenkast</a>
+                </div>
+            `,
+            isCurrent: isCurrent,
+            hiveId: hiveId
+        };
     }
 
     function escapeHtml(text) {
