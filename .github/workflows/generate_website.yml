@@ -2,7 +2,7 @@ name: Trigger Website Generation and Pull
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # hourlys
+    - cron: '0 */1 * * *'  # hourly
   workflow_dispatch:
 
 jobs:
@@ -10,9 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Call generate-website endpoint
+      - name: Call generate-website endpoint with hive list
         run: |
-          curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}"
+          # Define hive list
+          HIVE_LIST="c00001_d001,c00001_d011,c00001_d021,c00001_d031,c00002_d001,c00003_d001,c00004_d001,c99999_d001,c00005_d001"
+          
+          # Call endpoint with hives parameter
+          curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}&hives=${HIVE_LIST}"
 
       - name: Checkout Pages repo
         uses: actions/checkout@v4
@@ -29,12 +33,15 @@ jobs:
           for id in c00001_d001 c00001_d011 c00001_d021 c00001_d031 c00002_d001 c00003_d001 c00004_d001 c99999_d001 c00005_d001; do
             # Try to download HTML
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
-        
           done
 
-      - name: Download JSON and CSV files from Fly.io
+      - name: Download locations page and data files from Fly.io
         run: |
           cd site
+          # Download the new locations overview page
+          curl -f "https://smart-isolator.fly.dev/static/locaties.html" -o locaties.html || true
+          
+          # Download JSON and CSV files
           curl -f "https://smart-isolator.fly.dev/static/hive_data.json" -o hive_data.json || true
           curl -f "https://smart-isolator.fly.dev/static/hive_data.csv" -o hive_data.csv || true
 
