@@ -5,6 +5,19 @@ on:
     - cron: '0 */1 * * *'  # hourly
   workflow_dispatch:
 
+env:
+  # Define hive list once at the top level
+  HIVE_LIST: >-
+    c00001_d001,
+    c00001_d011,
+    c00001_d021,
+    c00001_d031,
+    c00002_d001,
+    c00003_d001,
+    c00004_d001,
+    c99999_d001,
+    c00005_d001
+
 jobs:
   generate-and-pull:
     runs-on: ubuntu-latest
@@ -12,11 +25,11 @@ jobs:
     steps:
       - name: Call generate-website endpoint with hive list
         run: |
-          # Define hive list
-          HIVE_LIST="c00001_d001,c00001_d011,c00001_d021,c00001_d031,c00002_d001,c00003_d001,c00004_d001,c99999_d001,c00005_d001"
+          # Use the globally defined hive list (remove newlines and spaces)
+          CLEAN_HIVE_LIST=$(echo "${{ env.HIVE_LIST }}" | tr -d '\n' | tr -d ' ')
           
           # Call endpoint with hives parameter
-          curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}&hives=${HIVE_LIST}"
+          curl --fail "https://smart-isolator.fly.dev/generate-website?token=${{ secrets.WEBSITE_TOKEN }}&hives=${CLEAN_HIVE_LIST}"
 
       - name: Checkout Pages repo
         uses: actions/checkout@v4
@@ -29,9 +42,12 @@ jobs:
         run: |
           cd site
           mkdir -p images
-        
-          for id in c00001_d001 c00001_d011 c00001_d021 c00001_d031 c00002_d001 c00003_d001 c00004_d001 c99999_d001 c00005_d001; do
-            # Try to download HTML
+          
+          # Convert hive list for iteration (remove commas and newlines)
+          HIVES=$(echo "${{ env.HIVE_LIST }}" | tr ',' '\n' | tr -d ' ')
+          
+          for id in $HIVES; do
+            # Try to download HTML for each hive
             curl -f "https://smart-isolator.fly.dev/static/index_${id}.html" -o index_${id}.html || true
           done
 
