@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="assets/css/main.css" />
     <!-- Leaflet Map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <!-- Header -->
@@ -33,8 +35,8 @@
                 <p>Ontdek imkers en hun bijenkasten</p>
             </header>
             
-            <!-- Interactive Map -->
-            <div id="map" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
+            <!-- Small Interactive Map -->
+            <div id="map" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
             
             <div id="locations-grid" class="locations-grid">
                 <p>Locaties laden...</p>
@@ -129,31 +131,6 @@
         display: inline-block;
     }
     
-    /* Map styling */
-    #map {
-        z-index: 1;
-    }
-    
-    .map-popup h4 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
-    }
-    
-    .map-popup p {
-        margin: 0.2rem 0;
-        font-size: 0.9rem;
-    }
-    
-    .map-popup .popup-button {
-        background: #4CAF50;
-        color: white;
-        padding: 0.4rem 0.8rem;
-        text-decoration: none;
-        border-radius: 4px;
-        display: inline-block;
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-    }
     </style>
 
     <!-- Leaflet Map JS -->
@@ -163,17 +140,20 @@
     <script>
     let map;
     let markers = [];
+    let currentSelectedHive = null;
+    let allValidCards = [];
     
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize map
-        initializeMap();
-        
         // Server injects hive list
-        const hiveIds = ["c00004_d001", "c00003_d001", "c00001_d001", "c00005_d001", "c00002_d001"];
+        const hiveIds = ["c00005_d001", "c00002_d001", "c00004_d001", "c00003_d001", "c00001_d001"];
         
         // Check if coming from a specific hive
         const urlParams = new URLSearchParams(window.location.search);
         const currentHive = urlParams.get('from');
+        currentSelectedHive = currentHive;
+        
+        // Initialize map
+        initializeMap();
         
         loadAllLocations(hiveIds, currentHive);
     });
@@ -186,9 +166,7 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-    }
-
-    function loadAllLocations(hiveIds, currentHive = null) {
+    }    function loadAllLocations(hiveIds, currentHive = null) {
         const grid = document.getElementById('locations-grid');
         grid.innerHTML = '<p class="loading-message">Locaties laden...</p>';
         
@@ -228,12 +206,15 @@
             console.log('Valid cards:', validCards.map(c => c.hiveId));
             
             if (validCards.length > 0) {
+                // Store valid cards globally for map updates
+                allValidCards = validCards;
+                
                 // Reorder cards: current hive first (if specified)
-                const orderedCards = reorderCards(validCards, currentHive);
+                const orderedCards = reorderCards(validCards, currentSelectedHive);
                 console.log('Ordered cards count:', orderedCards.length);
                 grid.innerHTML = orderedCards.join('');
                 
-                // Add markers to map
+                // Add markers to map (only for hives with postal codes)
                 addMarkersToMap(validCards);
             } else {
                 grid.innerHTML = '<p class="error-message">Geen locatie-informatie beschikbaar.</p>';
@@ -255,20 +236,38 @@
         
         return {
             html: `
-                <div class="location-card${currentClass}" data-hive="${hiveId}">
+                <div class="location-card${currentClass}" data-hive="${hiveId}" onclick="selectHive('${hiveId}')">
                     ${currentBadge}
                     <h3>${escapeHtml(name)}</h3>
                     <p class="location-place">📍 ${escapeHtml(place)}</p>
                     <p class="location-description">${escapeHtml(shortDescription)}</p>
-                    <a href="index_${hiveId}.html" class="visit-button">Bezoek Bijenkast</a>
+                    <a href="index_${hiveId}.html" class="visit-button" onclick="event.stopPropagation()">Bezoek Bijenkast</a>
+                    ${isCurrent ? '' : '<button class="select-button" onclick="event.stopPropagation(); selectHive(\'' + hiveId + '\');">Selecteer</button>'}
                 </div>
             `,
             isCurrent: isCurrent,
             hiveId: hiveId,
-            data: data  // Include data for map markers
+            data: data
         };
     }
 
+    function selectHive(hiveId) {
+        currentSelectedHive = hiveId;
+        
+        // Update URL without reload
+        const url = new URL(window.location);
+        url.searchParams.set('from', hiveId);
+        window.history.replaceState({}, '', url);
+        
+        // Reorder cards
+        const orderedCards = reorderCards(allValidCards, hiveId);
+        const grid = document.getElementById('locations-grid');
+        grid.innerHTML = orderedCards.join('');
+        
+        // Update map markers
+        updateMapSelection(hiveId);
+    }
+    
     async function addMarkersToMap(validCards) {
         // Clear existing markers
         markers.forEach(marker => map.removeLayer(marker));
@@ -278,9 +277,9 @@
         
         for (const card of validCards) {
             const data = card.data;
-            // ONLY use postal code, not name/place
             const postcode = data.postcode;
             
+            // Only add markers for hives with postal codes
             if (postcode && postcode.length >= 4) {
                 try {
                     // Extract first 4 digits from postal code
@@ -288,7 +287,7 @@
                     const coords = await geocodePostalCode(postalCode4);
                     
                     if (coords) {
-                        const marker = createSimpleMarker(coords, card);
+                        const marker = createInteractiveMarker(coords, card);
                         markersToAdd.push(marker);
                     }
                 } catch (error) {
@@ -326,36 +325,64 @@
         return null;
     }
     
-    function createSimpleMarker(coords, card) {
+    function createInteractiveMarker(coords, card) {
         const data = card.data;
         const name = data.naam_imker || 'Onbekende Imker';
         const hiveId = card.hiveId;
         const postcode = data.postcode;
         
-        // Create simple marker
-        const isCurrentHive = card.isCurrent;
-        const markerColor = isCurrentHive ? '#4CAF50' : '#ff6b35';
+        // Determine if this is the currently selected hive
+        const isSelected = (hiveId === currentSelectedHive);
+        
+        // Create marker with different appearance for selected hive
+        const markerColor = isSelected ? '#4CAF50' : '#ff6b35';
+        const markerSize = isSelected ? 20 : 16;
         
         const marker = L.marker(coords, {
             icon: L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="background: ${markerColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
+                html: `<div style="background: ${markerColor}; width: ${markerSize}px; height: ${markerSize}px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [markerSize, markerSize],
+                iconAnchor: [markerSize/2, markerSize/2]
             })
         });
         
-        // Simple popup with postal code info
+        // Add click handler to select this hive
+        marker.on('click', function() {
+            selectHive(hiveId);
+        });
+        
+        // Store hive ID in marker for updates
+        marker.hiveId = hiveId;
+        
+        // Add popup with hive info
         const popupContent = `
             <div class="map-popup">
                 <h4>🐝 ${escapeHtml(name)}</h4>
-                <p>� ${escapeHtml(postcode)}</p>
-                <a href="index_${hiveId}.html" class="popup-button">Bezoek Bijenkast</a>
+                <p>📍 ${escapeHtml(postcode)}</p>
+                <button onclick="selectHive('${hiveId}')" class="popup-button">Selecteer Bijenkast</button>
             </div>
         `;
         
         marker.bindPopup(popupContent);
         return marker;
+    }
+    
+    function updateMapSelection(selectedHiveId) {
+        // Update all markers to reflect new selection
+        markers.forEach(marker => {
+            const isSelected = (marker.hiveId === selectedHiveId);
+            const markerColor = isSelected ? '#4CAF50' : '#ff6b35';
+            const markerSize = isSelected ? 20 : 16;
+            
+            // Update marker icon
+            marker.setIcon(L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background: ${markerColor}; width: ${markerSize}px; height: ${markerSize}px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [markerSize, markerSize],
+                iconAnchor: [markerSize/2, markerSize/2]
+            }));
+        });
     }
 
     function reorderCards(cards, currentHive) {
