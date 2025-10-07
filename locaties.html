@@ -36,7 +36,12 @@
             </header>
             
             <!-- Small Interactive Map -->
-            <div id="map" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
+            <div id="map" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
+            
+            <!-- Privacy Disclaimer -->
+            <p style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 2rem; font-style: italic;">
+                📍 Locaties zijn benaderd voor privacy. Geen exacte adressen getoond.
+            </p>
             
             <div id="locations-grid" class="locations-grid">
                 <p>Locaties laden...</p>
@@ -145,7 +150,7 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         // Server injects hive list
-        const hiveIds = ["c00003_d001", "c00001_d001", "c00002_d001", "c00005_d001", "c00004_d001"];
+        const hiveIds = ["c00002_d001", "c00005_d001", "c00004_d001", "c00003_d001", "c00001_d001"];
         
         // Check if coming from a specific hive
         const urlParams = new URLSearchParams(window.location.search);
