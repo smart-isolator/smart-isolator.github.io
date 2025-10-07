@@ -1,40 +1,496 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Contact</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-	</head>
-	<body>
+<head>
+    <title>Informatie - Smart-Isolator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
 
-		<!-- Banner -->
-			<section class="banner full">
-				<article>
-					<img src="images/bg.gif" alt="" />
-					<div class="inner">
-						<header>
-							<p>Bedankt voor uw bezoek!</p>
-							<p>Contact gegevens: Daan Bijkerk & Aldert Nagel</p>
-							<p>Wilt U ook meedoen met dit project?</p>
-							<p>Mail ons naar smart.hive.isolator@gmail.com!</p>
-						</header>
-					</div>
-				</article>
-			</section>
+        /* Responsive Navigation Header */
+        .main-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-		
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-			<script>
-				// Initialize a mqtt variable globally
-				console.log(mqtt)
-			</script>
-	</body>
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .site-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.current {
+            background: rgba(255,255,255,0.4);
+            font-weight: bold;
+        }
+
+        /* Main content styling */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-gif {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Content sections */
+        .content-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #2196F3;
+        }
+
+        .content-section h2 {
+            color: #2196F3;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        /* Contact grid */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            border-top: 4px solid #2196F3;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .contact-card h3 {
+            color: #2196F3;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .contact-card .contact-item {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .contact-card .contact-item strong {
+            color: #4CAF50;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Call to action section */
+        .cta-section {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .email-button {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .email-button:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Project info section */
+        .project-info {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .project-info h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .project-info p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Features grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 3px solid #4CAF50;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            color: #4CAF50;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-nav {
+                width: 100%;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .nav-link {
+                text-align: center;
+                font-size: 0.8rem;
+            }
+
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .cta-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Special styling for emphasis */
+        strong {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="site-title">🐝 Smart-Isolator</div>
+            <nav class="main-nav">
+                <a href="locaties.html" class="nav-link">📍 Alle Locaties</a>
+                <a href="bijen.html" class="nav-link">🐝 Bijen Info</a>
+                <a href="vegetatie.html" class="nav-link">🌿 Vegetatie</a>
+                <a href="information.html" class="nav-link current">ℹ️ Informatie</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>ℹ️ Project Informatie</h1>
+            <img src="images/bg.gif" alt="Smart-Isolator animatie" class="hero-gif" />
+            <p class="hero-subtitle">Bedankt voor uw bezoek aan het Smart-Isolator project!</p>
+            <p>Een innovatief platform voor het monitoren en delen van bijenkasten in Nederland</p>
+        </section>
+
+        <!-- Project Description -->
+        <section class="content-section">
+            <h2>Over het Smart-Isolator Project</h2>
+            <p>Het Smart-Isolator project is een innovatief initiatief dat technologie en natuurbehoud samenbrengt. Ons doel is het creëren van een netwerk van slimme bijenkasten die real-time data verzamelen over bijengezondheid, omgevingscondities en ecosysteemtrends.</p>
+            <p>Door moderne sensortechnologie te combineren met traditionele imkerij, bieden we waardevolle inzichten in het welzijn van bijen en hun leefomgeving. Deze informatie helpt niet alleen imkers hun praktijken te optimaliseren, maar draagt ook bij aan wetenschappelijk onderzoek naar bijensterfte en milieubeheer.</p>
+        </section>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h4>Real-time Monitoring</h4>
+                <p>Temperatuur, vochtigheid en activiteitsniveaus van bijenkasten</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h4>Locatie Netwerk</h4>
+                <p>Overzicht van alle deelnemende bijenkasten in Nederland</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌱</div>
+                <h4>Ecosysteem Data</h4>
+                <p>Informatie over vegetatie en bloeipatronen rond bijenkasten</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h4>Educatie</h4>
+                <p>Kennisdeling over bijen, imkerij en natuurbehoud</p>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <section class="cta-section">
+            <h2>🤝 Wilt u ook meedoen?</h2>
+            <p>Word onderdeel van ons groeiende netwerk van slimme bijenkasten en draag bij aan het behoud van onze belangrijke bestuivers!</p>
+            <a href="mailto:smart.hive.isolator@gmail.com" class="email-button">
+                📧 Contact opnemen
+            </a>
+        </section>
+
+        <!-- Contact Information -->
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h3>👨‍💻 Project Team</h3>
+                <div class="contact-item">
+                    <strong>Daan Bijkerk</strong>
+                    Technische ontwikkeling & Data-analyse
+                </div>
+                <div class="contact-item">
+                    <strong>Aldert Nagel</strong>
+                    Imkerij expertise & Veldonderzoek
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <h3>📞 Contact Informatie</h3>
+                <div class="contact-item">
+                    <strong>📧 Email</strong>
+                    smart.hive.isolator@gmail.com
+                </div>
+                <div class="contact-item">
+                    <strong>🌐 Website</strong>
+                    Smart-Isolator Platform
+                </div>
+                <div class="contact-item">
+                    <strong>⏰ Responstijd</strong>
+                    Binnen 24-48 uur
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Mission -->
+        <section class="project-info">
+            <h2>🎯 Onze Missie</h2>
+            <p>We geloven dat technologie en natuur hand in hand kunnen gaan. Door slimme sensoren te integreren in bijenkasten, creëren we een datacenter van natuurlijke processen. Deze informatie stelt ons in staat beter begrip te ontwikkelen van bijengezondheid, klimaatverandering en biodiversiteit.</p>
+            <p>Samen bouwen we aan een duurzame toekomst waarin bijen en mensen profiteren van innovatieve monitoring en zorgvuldige natuurbeheer.</p>
+        </section>
+
+        <!-- How to Participate -->
+        <section class="content-section">
+            <h2>🚀 Hoe kunt u deelnemen?</h2>
+            <p>Deelname aan het Smart-Isolator project is eenvoudig en toegankelijk voor zowel ervaren imkers als beginners:</p>
+            
+            <div style="margin: 1.5rem 0;">
+                <p><strong>1. Contact opnemen</strong><br>
+                Stuur ons een email met uw interesse en locatie</p>
+                
+                <p><strong>2. Intake gesprek</strong><br>
+                We bespreken uw situatie en de mogelijkheden</p>
+                
+                <p><strong>3. Installatie</strong><br>
+                Onze sensoren worden vakkundig geïnstalleerd</p>
+                
+                <p><strong>4. Monitoring</strong><br>
+                Begin met het verzamelen van waardevolle data</p>
+            </div>
+            
+            <p>Er zijn geen kosten verbonden aan deelname. Het project wordt mogelijk gemaakt door onderzoeksfondsen en onze passie voor natuurbehoud.</p>
+        </section>
+    </div>
+
+    <!-- Optional: MQTT functionality if needed -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        // Initialize a mqtt variable globally
+        if (typeof mqtt !== 'undefined') {
+            console.log('MQTT library loaded:', mqtt);
+        }
+
+        // Add click tracking for email button
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailButton = document.querySelector('.email-button');
+            if (emailButton) {
+                emailButton.addEventListener('click', function() {
+                    console.log('Contact email clicked');
+                });
+            }
+        });
+    </script>
+</body>
 </html>
