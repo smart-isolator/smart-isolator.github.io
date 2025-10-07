@@ -145,7 +145,7 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         // Server injects hive list
-        const hiveIds = ["c00004_d001", "c00003_d001", "c00001_d001", "c00002_d001", "c00005_d001"];
+        const hiveIds = ["c00003_d001", "c00001_d001", "c00002_d001", "c00005_d001", "c00004_d001"];
         
         // Check if coming from a specific hive
         const urlParams = new URLSearchParams(window.location.search);
@@ -330,49 +330,36 @@
         try {
             // First try with full postal code (works best with 6 digits like 2592RN)
             if (fullPostalCode && fullPostalCode.length >= 6) {
-                const query = encodeURIComponent(`${fullPostalCode} Netherlands`);
-                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=nl&limit=1&addressdetails=1`);
-                const results = await response.json();
+                // Try Nominatim first
+                const nominatimCoords = await geocodeWithNominatim(fullPostalCode);
+                if (nominatimCoords) {
+                    return nominatimCoords;
+                }
                 
-                if (results && results.length > 0) {
-                    let lat = parseFloat(results[0].lat);
-                    let lon = parseFloat(results[0].lon);
-                    
-                    // Add small random offset to avoid exact overlap when multiple hives have same postal code
-                    const offsetLat = (Math.random() - 0.5) * 0.002; // ~100m at Netherlands latitude
-                    const offsetLon = (Math.random() - 0.5) * 0.003; // ~100m at Netherlands longitude
-                    
-                    lat += offsetLat;
-                    lon += offsetLon;
-                    
-                    console.log(`Geocoded ${fullPostalCode} to:`, lat, lon, '(with small random offset)');
-                    return [lat, lon];
+                // Fallback to PDOK API
+                const pdokCoords = await geocodeWithPDOK(fullPostalCode);
+                if (pdokCoords) {
+                    return pdokCoords;
                 }
             }
             
-            // For 4-digit postal codes, get a random 6-digit code from postcode.nl
+            // For 4-digit postal codes, get a random 6-digit code from PDOK
             const postalCode4 = fullPostalCode.toString().substring(0, 4);
             const randomSixDigitCode = await getRandomSixDigitPostalCode(postalCode4);
             
             if (randomSixDigitCode) {
-                // Use the random 6-digit postal code for accurate geocoding
-                const query = encodeURIComponent(`${randomSixDigitCode} Netherlands`);
-                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=nl&limit=1&addressdetails=1`);
-                const results = await response.json();
+                // Try geocoding the random 6-digit postal code
+                const nominatimCoords = await geocodeWithNominatim(randomSixDigitCode);
+                if (nominatimCoords) {
+                    console.log(`Geocoded ${fullPostalCode} via random 6-digit ${randomSixDigitCode}`);
+                    return nominatimCoords;
+                }
                 
-                if (results && results.length > 0) {
-                    let lat = parseFloat(results[0].lat);
-                    let lon = parseFloat(results[0].lon);
-                    
-                    // Add small random offset to avoid exact overlap
-                    const offsetLat = (Math.random() - 0.5) * 0.002; // ~100m at Netherlands latitude
-                    const offsetLon = (Math.random() - 0.5) * 0.003; // ~100m at Netherlands longitude
-                    
-                    lat += offsetLat;
-                    lon += offsetLon;
-                    
-                    console.log(`Geocoded ${fullPostalCode} via random 6-digit ${randomSixDigitCode} to:`, lat, lon, '(with small random offset)');
-                    return [lat, lon];
+                // Fallback to PDOK for the random code
+                const pdokCoords = await geocodeWithPDOK(randomSixDigitCode);
+                if (pdokCoords) {
+                    console.log(`Geocoded ${fullPostalCode} via random 6-digit ${randomSixDigitCode} using PDOK`);
+                    return pdokCoords;
                 }
             }
         } catch (error) {
@@ -381,34 +368,107 @@
         return null;
     }
     
+    async function geocodeWithNominatim(postalCode) {
+        try {
+            const query = encodeURIComponent(`${postalCode} Netherlands`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=nl&limit=1&addressdetails=1`);
+            const results = await response.json();
+            
+            if (results && results.length > 0) {
+                let lat = parseFloat(results[0].lat);
+                let lon = parseFloat(results[0].lon);
+                
+                // Add small random offset
+                const offsetLat = (Math.random() - 0.5) * 0.002; // ~100m
+                const offsetLon = (Math.random() - 0.5) * 0.003; // ~100m
+                
+                lat += offsetLat;
+                lon += offsetLon;
+                
+                console.log(`Geocoded ${postalCode} with Nominatim to:`, lat, lon, '(with small random offset)');
+                return [lat, lon];
+            }
+        } catch (error) {
+            console.warn(`Nominatim geocoding failed for ${postalCode}:`, error);
+        }
+        return null;
+    }
+    
+    async function geocodeWithPDOK(postalCode) {
+        try {
+            // Search for the postal code using PDOK
+            const searchUrl = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/suggest?q=${postalCode}&fq=type:postcode`;
+            const searchResponse = await fetch(searchUrl);
+            const searchData = await searchResponse.json();
+            
+            if (searchData.response && searchData.response.docs && searchData.response.docs.length > 0) {
+                // Get the first matching postal code ID
+                const doc = searchData.response.docs[0];
+                
+                // Look up detailed info including coordinates
+                const lookupUrl = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/lookup?id=${doc.id}`;
+                const lookupResponse = await fetch(lookupUrl);
+                const lookupData = await lookupResponse.json();
+                
+                if (lookupData.response && lookupData.response.docs && lookupData.response.docs.length > 0) {
+                    const detailDoc = lookupData.response.docs[0];
+                    
+                    // Parse coordinates from "POINT(lon lat)" format
+                    const coordsMatch = detailDoc.centroide_ll.match(/POINT\(([\d.-]+)\s+([\d.-]+)\)/);
+                    if (coordsMatch) {
+                        let lon = parseFloat(coordsMatch[1]);
+                        let lat = parseFloat(coordsMatch[2]);
+                        
+                        // Add small random offset
+                        const offsetLat = (Math.random() - 0.5) * 0.002; // ~100m
+                        const offsetLon = (Math.random() - 0.5) * 0.003; // ~100m
+                        
+                        lat += offsetLat;
+                        lon += offsetLon;
+                        
+                        console.log(`Geocoded ${postalCode} with PDOK to:`, lat, lon, '(with small random offset)');
+                        return [lat, lon];
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn(`PDOK geocoding failed for ${postalCode}:`, error);
+        }
+        return null;
+    }
+    
     async function getRandomSixDigitPostalCode(fourDigitCode) {
         try {
-            const url = `https://www.postcode.nl/search/nld/query/${fourDigitCode}`;
-            const response = await fetch(url, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                }
-            });
+            // Use PDOK Locatieserver API - CORS-friendly Dutch government API
+            const url = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/suggest?q=${fourDigitCode}&fq=type:postcode`;
+            const response = await fetch(url);
             
             if (!response.ok) {
                 console.warn(`Failed to fetch postal codes for ${fourDigitCode}`);
                 return null;
             }
             
-            const html = await response.text();
+            const data = await response.json();
             
-            // Extract all 6-digit postal codes using regex
-            const regex = new RegExp(`\\b${fourDigitCode}[A-Z]{2}\\b`, 'g');
-            const matches = html.match(regex);
-            
-            if (matches && matches.length > 0) {
-                // Remove duplicates and randomly pick one
-                const uniqueMatches = [...new Set(matches)];
-                const randomIndex = Math.floor(Math.random() * uniqueMatches.length);
-                const selectedCode = uniqueMatches[randomIndex];
+            if (data.response && data.response.docs && data.response.docs.length > 0) {
+                // Extract postal codes from the weergavenaam field
+                const postalCodes = data.response.docs
+                    .map(doc => {
+                        // Extract postal code from "Streetname, 2592HP 's-Gravenhage" format
+                        const match = doc.weergavenaam.match(/(\d{4}[A-Z]{2})/);
+                        return match ? match[1] : null;
+                    })
+                    .filter(code => code && code.startsWith(fourDigitCode));
                 
-                console.log(`Found ${uniqueMatches.length} postal codes for ${fourDigitCode}, selected: ${selectedCode}`);
-                return selectedCode;
+                if (postalCodes.length > 0) {
+                    // Remove duplicates and randomly pick one
+                    const uniqueCodes = [...new Set(postalCodes)];
+                    const randomIndex = Math.floor(Math.random() * uniqueCodes.length);
+                    const selectedCode = uniqueCodes[randomIndex];
+                    
+                    console.log(`Found ${uniqueCodes.length} postal codes for ${fourDigitCode}, selected: ${selectedCode}`);
+                    return selectedCode;
+                }
             }
             
             console.warn(`No postal codes found for ${fourDigitCode}`);
