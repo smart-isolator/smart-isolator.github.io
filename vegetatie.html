@@ -1,38 +1,530 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Drachtplanten</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-	</head>
-	<body>
+<head>
+    <title>Vegetatie - Smart-Isolator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
 
-		<!-- Banner -->
-			<section class="banner full">
-				<article>
-					<img src="images/bg.gif" alt="" />
-					<div class="inner">
-						<header>
-							<p>Op deze pagina gaan we in de toekomst lokale drachtplanten vermelden.</p>
-              <p>Kom gauw terug voor een update!</p>
-						</header>
-					</div>
-				</article>
-			</section>
+        /* Responsive Navigation Header */
+        .main-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-		
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-			<script>
-				// Initialize a mqtt variable globally
-				console.log(mqtt)
-			</script>
-	</body>
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .site-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.current {
+            background: rgba(255,255,255,0.4);
+            font-weight: bold;
+        }
+
+        /* Main content styling */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #8BC34A, #689F38);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-gif {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Coming soon section */
+        .coming-soon-section {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .coming-soon-section h2 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .coming-soon-section p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.7;
+        }
+
+        /* Content sections */
+        .content-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #8BC34A;
+        }
+
+        .content-section h2 {
+            color: #8BC34A;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .content-section ul {
+            margin: 1rem 0 1rem 2rem;
+            color: #555;
+        }
+
+        .content-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Plant categories grid */
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .plant-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            border-top: 4px solid #8BC34A;
+        }
+
+        .plant-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .plant-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .plant-card h3 {
+            color: #8BC34A;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .plant-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Seasonal grid */
+        .seasonal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .season-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 3px solid #8BC34A;
+        }
+
+        .season-emoji {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .season-card h4 {
+            color: #8BC34A;
+            margin-bottom: 0.5rem;
+        }
+
+        .season-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Future features section */
+        .future-features {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .future-features h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .future-features p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .feature-item strong {
+            color: white;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-nav {
+                width: 100%;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .plants-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .seasonal-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .nav-link {
+                text-align: center;
+                font-size: 0.8rem;
+            }
+
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .coming-soon-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Special styling for emphasis */
+        em {
+            color: #8BC34A;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        strong {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="site-title">🐝 Smart-Isolator</div>
+            <nav class="main-nav">
+                <a href="locaties.html" class="nav-link">📍 Alle Locaties</a>
+                <a href="bijen.html" class="nav-link">🐝 Bijen Info</a>
+                <a href="vegetatie.html" class="nav-link current">🌿 Vegetatie</a>
+                <a href="information.html" class="nav-link">ℹ️ Informatie</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>🌿 Drachtplanten & Vegetatie</h1>
+            <img src="images/bg.gif" alt="Drachtplanten animatie" class="hero-gif" />
+            <p class="hero-subtitle">Ontdek welke planten bijen helpen gedijen</p>
+            <p>Een gids voor bijenvriendelijke vegetatie rond onze bijenkasten</p>
+        </section>
+
+        <!-- Coming Soon Notice -->
+        <section class="coming-soon-section">
+            <h2>🚧 In Ontwikkeling</h2>
+            <p>Op deze pagina gaan we in de toekomst lokale drachtplanten vermelden.</p>
+            <p><strong>Kom gauw terug voor een update!</strong></p>
+        </section>
+
+        <!-- Introduction -->
+        <section class="content-section">
+            <h2>Wat zijn drachtplanten?</h2>
+            <p>Drachtplanten zijn planten die nectar en/of stuifmeel leveren aan bijen. Deze planten vormen de voedselbasis voor bijen en zijn essentieel voor hun overleving. Door het planten van bijenvriendelijke gewassen kunnen we bijenpopulaties ondersteunen en biodiversiteit bevorderen.</p>
+            <p>In het Smart-Isolator project monitoren we niet alleen de bijenkasten, maar ook de vegetatie in de omgeving. Deze informatie helpt ons begrijpen welke planten het meest waardevol zijn voor bijen in verschillende seizoenen en regio's.</p>
+        </section>
+
+        <!-- Plant Categories Preview -->
+        <div class="plants-grid">
+            <div class="plant-card">
+                <div class="plant-emoji">🌻</div>
+                <h3>Zomerbloeiers</h3>
+                <p>Zonnebloemen, lavendel, en andere planten die in de zomer bloeien en veel nectar produceren voor actieve bijenkolonies.</p>
+            </div>
+
+            <div class="plant-card">
+                <div class="plant-emoji">🌸</div>
+                <h3>Voorjaarsbloeiers</h3>
+                <p>Belangrijke vroege nectarbronnen zoals krokussen, wilgen en fruitbomen die bijen helpen na de winter.</p>
+            </div>
+
+            <div class="plant-card">
+                <div class="plant-emoji">🍂</div>
+                <h3>Najaarsbloeiers</h3>
+                <p>Late bloeiende planten zoals asters en heide die bijen helpen wintervoorraden aan te leggen.</p>
+            </div>
+        </div>
+
+        <!-- Seasonal Information -->
+        <section class="content-section">
+            <h2>Seizoenskalender (Preview)</h2>
+            <p>Bijen hebben het hele jaar door verschillende plantenbronnen nodig. Hier volgt een voorproefje van wat we gaan documenteren:</p>
+        </section>
+
+        <div class="seasonal-grid">
+            <div class="season-card">
+                <div class="season-emoji">🌱</div>
+                <h4>Lente</h4>
+                <p>Wilgen, krokussen, narcissen, fruit bomen</p>
+            </div>
+            <div class="season-card">
+                <div class="season-emoji">☀️</div>
+                <h4>Zomer</h4>
+                <p>Linde, zonnebloem, lavendel, klaver</p>
+            </div>
+            <div class="season-card">
+                <div class="season-emoji">🍁</div>
+                <h4>Herfst</h4>
+                <p>Heide, asters, klimop, sedum</p>
+            </div>
+            <div class="season-card">
+                <div class="season-emoji">❄️</div>
+                <h4>Winter</h4>
+                <p>Winterbloeiende planten en evergreens</p>
+            </div>
+        </div>
+
+        <!-- Future Features -->
+        <section class="future-features">
+            <h2>🔮 Toekomstige Functionaliteiten</h2>
+            <p>We werken hard aan het uitbreiden van deze sectie. Binnenkort verwachten we:</p>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <strong>📊 Lokale Data</strong>
+                    Specifieke drachtplanten per bijenlocatie
+                </div>
+                <div class="feature-item">
+                    <strong>📅 Bloeikalender</strong>
+                    Wanneer welke planten bloeien in uw regio
+                </div>
+                <div class="feature-item">
+                    <strong>🌺 Plantengids</strong>
+                    Gedetailleerde beschrijvingen met foto's
+                </div>
+                <div class="feature-item">
+                    <strong>🗺️ Vegetatiekaart</strong>
+                    Waar welke planten groeien rond bijenkasten
+                </div>
+                <div class="feature-item">
+                    <strong>📈 Seizoenstrends</strong>
+                    Hoe vegetatie bijenactiviteit beïnvloedt
+                </div>
+                <div class="feature-item">
+                    <strong>🌱 Plantips</strong>
+                    Aanbevelingen voor bijenvriendelijke tuinen
+                </div>
+            </div>
+        </section>
+
+        <!-- Importance Section -->
+        <section class="content-section">
+            <h2>Waarom is vegetatie-monitoring belangrijk?</h2>
+            <p>Door de vegetatie rond onze bijenkasten te monitoren, kunnen we:</p>
+            <ul>
+                <li><strong>Voedselzekerheid</strong> - Begrijpen welke planten essentieel zijn voor bijenwelzijn</li>
+                <li><strong>Seizoenspatronen</strong> - Zien hoe bloeiperiodes bijenactiviteit beïnvloeden</li>
+                <li><strong>Biodiversiteit</strong> - De rijkdom van het lokale ecosysteem documenteren</li>
+                <li><strong>Klimaatimpact</strong> - Veranderingen in vegetatiepatronen door klimaat volgen</li>
+                <li><strong>Tuinadvies</strong> - Imkers en tuiniers helpen bij plantselectie</li>
+            </ul>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="coming-soon-section">
+            <h2>🌻 Help ons groeien!</h2>
+            <p>Kent u bijzondere drachtplanten in uw omgeving? Deel uw kennis met ons!</p>
+            <p>Email ons uw vegetatie-observaties naar <strong>smart.hive.isolator@gmail.com</strong></p>
+        </section>
+    </div>
+
+    <!-- Optional: MQTT functionality if needed -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        // Initialize a mqtt variable globally
+        if (typeof mqtt !== 'undefined') {
+            console.log('MQTT library loaded:', mqtt);
+        }
+
+        // Add some interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const plantCards = document.querySelectorAll('.plant-card');
+            plantCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    console.log('Exploring plant category:', this.querySelector('h3').textContent);
+                });
+            });
+        });
+    </script>
+</body>
 </html>
