@@ -1034,8 +1034,8 @@
 					if (topic === "v000/c00004/d001/hive_summary") {
 					    const adviceContainer = document.getElementById("bee-advice-container");
 					    const adviceText = document.getElementById("bee-advice-text");
-					    adviceText.textContent = message.toString();
-					    adviceContainer.style.display = "flex";
+					    if (adviceText) adviceText.textContent = message.toString();
+					    if (adviceContainer) adviceContainer.style.display = "flex";
 					    // Also reflect in BeeAI widget if loaded
 					    try {
 					    	const widgetAdvice = document.getElementById("bee-advice-text-widget");
