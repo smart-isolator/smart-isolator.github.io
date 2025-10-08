@@ -1023,6 +1023,14 @@
 					console.log(`Connection Time is: ${connectionTime}`);
 
 					document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
+					// Update BeeAI widget status if present
+					try {
+						const beeaiStatusEl = document.getElementById("beeai-status");
+						if (beeaiStatusEl) beeaiStatusEl.textContent = "Verbonden";
+						if (window && typeof window.updateConnectionStatus === 'function') {
+							window.updateConnectionStatus(true);
+						}
+					} catch (e) { /* no-op */ }
 					console.log("Verbonden met de tussenman.");
 					// Subscribe to unique answer topic for this client
 					client.subscribe(`v000/c00004/d001/answer/${clientId}`,(err)=>{if(err)console.error("Subscribe error (answer):",err);});
@@ -1042,6 +1050,14 @@
 					    const adviceText = document.getElementById("bee-advice-text");
 					    adviceText.textContent = message.toString();
 					    adviceContainer.style.display = "flex";
+					    // Also reflect in BeeAI widget if loaded
+					    try {
+					    	const widgetAdvice = document.getElementById("bee-advice-text-widget");
+					    	if (widgetAdvice) widgetAdvice.textContent = message.toString();
+					    	if (window && typeof window.handleIncomingMessage === 'function') {
+					    		window.handleIncomingMessage('v001/hive/advice', message.toString());
+					    	}
+					    } catch (e) { /* no-op */ }
 					    return;
 					}
 
@@ -1079,6 +1095,20 @@
 						}
 						// display the message 
 						console.log(`Ontvangen bericht op topic ${topic}: ${message.toString()}`);
+						// Send to BeeAI widget as well
+						try {
+							if (window && typeof window.handleIncomingMessage === 'function') {
+								window.handleIncomingMessage('your/chat/topic', message.toString());
+							} else {
+								const ul = document.getElementById('beeai-messages');
+								if (ul) {
+									const li = document.createElement('li');
+									li.className = 'bot-message';
+									li.textContent = message.toString();
+									ul.appendChild(li);
+								}
+							}
+						} catch (e) { /* no-op */ }
 						displayMessage(`${message.toString()}`);
 					}
 				});
