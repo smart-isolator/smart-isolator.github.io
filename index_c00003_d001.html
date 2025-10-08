@@ -685,14 +685,6 @@
 					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
 					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
 					    </div>
-					    <p><strong>Status:</strong> <span id="status">Verbinden...</span></p>
-					    <input type="text" id="message" placeholder="Stel een vraag aan het bijenvolk?">
-					    <p class="disclaimer">Uw vraag wordt doorgestuurd naar een AI-model (ChatGPT). De vraag wordt geanonimiseerd opgeslagen voor analyse en verbetering. Vermijd het invullen van persoonlijke gegevens.</p>
-						<button onclick="publishMessage()" id="theButton">Versturen</button>
-						<p id="llmStatus"></p>
-						<p id="waitingTime"></p>
-					    <h2>Ontvangen berichten:</h2>
-					    <ul id="messages"></ul>
 					</header>
 				</div>
 			</section>
@@ -1017,12 +1009,16 @@
 				let conversationHistory = [];
 
 				const client = mqtt.connect(broker, options);
+				// expose for BeeAI widget
+				window.mqttClient = client;
+				window.mqttClientId = clientId;
 
 				client.on("connect", () => {
 					connectionTime = new Date().getTime();
 					console.log(`Connection Time is: ${connectionTime}`);
 
-					document.getElementById("status").textContent = "Verbonden met het bijenvolk!";
+					var statusEl = document.getElementById("status");
+					if (statusEl) statusEl.textContent = "Verbonden met het bijenvolk!";
 					// Update BeeAI widget status if present
 					try {
 						const beeaiStatusEl = document.getElementById("beeai-status");
@@ -1109,94 +1105,9 @@
 								}
 							}
 						} catch (e) { /* no-op */ }
-						displayMessage(`${message.toString()}`);
 					}
 				});
 
-				function publishMessage() {
-					const userInput = document.getElementById("message").value;
-					if (userInput.length > 200) {
-						alert("Uw vraag is te lang. Maximaal 200 tekens toegestaan.");
-						return;
-					}
-					// previous Q&A to history (max 6 turns)
-					const historyToSend = conversationHistory.slice(-6); // 3 Q&A pairs
-					const jsonPayload = {
-					    category: "question",
-					    cat_value: userInput,
-					    history: historyToSend,
-					    client_id: clientId
-					};
-					const jsonString = JSON.stringify(jsonPayload);
-					console.log("Sending:", jsonString);
-					client.publish("v000/c00003/d001/user", jsonString, (err) => {
-						if (err) console.error("Publish error:", err);
-					});
-
-					startTime = new Date().getTime();
-					waitingInterval = setInterval(updateWaitingTime, 1000);
-
-					document.getElementById('llmStatus').innerHTML = 'Vraag verstuurd! Verwerken van het antwoord...';
-					document.getElementById("theButton").setAttribute('disabled', 'disabled');
-				}
-
-				function displayMessage(msg) {
-					clearInterval(waitingInterval);
-					document.getElementById("theButton").removeAttribute('disabled');
-
-					document.getElementById('llmStatus').innerHTML = 'Antwoord ontvangen! U kunt nu een vervolg vraag stellen.';
-					document.getElementById('waitingTime').innerHTML = `Antwoord gegeven in ${waitingTime} seconden`;
-
-					const msgList = document.getElementById("messages");
-					const lastUserInput = document.getElementById("message").value;
-					const now = new Date();
-					const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-					// Create a Q&A card
-					const card = document.createElement("div");
-					card.className = "qa-card";
-					card.innerHTML = `
-					  <div class="qa-header">${timeString}</div>
-					  <div class="qa-pair">
-					    <div class="qa-user"><strong>Jij:</strong> ${escapeHtml(lastUserInput)}</div>
-					    <div class="qa-assistant"><strong>Assistent:</strong> ${escapeHtml(msg)}</div>
-					  </div>
-					`;
-
-					// Add the new Q&A card to the top of the list
-					if (msgList.firstChild) {
-						msgList.insertBefore(card, msgList.firstChild);
-					} else {
-						msgList.appendChild(card);
-					}
-
-					// Add last Q&A to conversationHistory for memory (as role/content)
-					if (lastUserInput && msg) {
-						conversationHistory.push({ role: "user", content: lastUserInput });
-						conversationHistory.push({ role: "assistant", content: msg });
-					}
-				}
-
-				// Helper to escape HTML for safe display
-				function escapeHtml(text) {
-					if (!text) return '';
-					return text.replace(/[&<>"']/g, function (c) {
-						return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[c] || c;
-					});
-				}
-
-				function updateWaitingTime() {
-					const currentTime = new Date().getTime();
-					waitingTime = Math.floor((currentTime - startTime) / 1000);
-					document.getElementById('waitingTime').innerHTML = `Verwerkingstijd: ${waitingTime} seconden`;
-
-					if (waitingTime > 60) {
-						clearInterval(waitingInterval);
-						document.getElementById('llmStatus').innerHTML = 'Het duurde te lang. Mogelijk wegens een technisch probleem.';
-						document.getElementById('waitingTime').innerHTML = 'Duur van 60 seconden overschreden.';
-						document.getElementById("theButton").removeAttribute('disabled');
-					}
-				}
 
 				// Modal logic for honey order
 				const honeyBtn = document.getElementById('honey-jar-btn');
@@ -1921,8 +1832,10 @@ updateDroplet();
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 .beeai-widget-container {
-	width: 350px;
-	height: 450px;
+	width: 380px;
+	height: 70vh;
+	max-height: 85vh;
+	min-height: 460px;
 	background: white;
 	border-radius: 12px;
 	overflow: hidden;
@@ -2008,6 +1921,8 @@ updateDroplet();
 	flex: 1;
 	overflow-y: auto;
 	padding-right: 5px;
+	min-height: 260px;
+	max-height: none;
 }
 .beeai-messages-container ul {
 	list-style-type: none;
@@ -2108,7 +2023,12 @@ updateDroplet();
 	60% { transform: translateY(-5px); }
 }
 @media (max-width: 480px) {
-	.beeai-widget-container { width: calc(100vw - 40px); height: 400px; }
+	.beeai-widget-container {
+		width: calc(100vw - 24px);
+		height: 80vh;
+		max-height: 92vh;
+		min-height: 60vh;
+	}
 }
 </style>
 <script>
