@@ -1007,6 +1007,8 @@
 				let startTime;
 				let waitingInterval;
 				let conversationHistory = [];
+				// expose conversation history for widget access
+				window.conversationHistory = conversationHistory;
 
 				const client = mqtt.connect(broker, options);
 				// expose for BeeAI widget
@@ -1102,6 +1104,13 @@
 									li.className = 'bot-message';
 									li.textContent = message.toString();
 									ul.appendChild(li);
+								}
+							}
+							// Track in conversation history for better follow-ups
+							if (Array.isArray(window.conversationHistory)) {
+								window.conversationHistory.push({ role: 'assistant', content: message.toString() });
+								if (window.conversationHistory.length > 12) {
+									window.conversationHistory.splice(0, window.conversationHistory.length - 12);
 								}
 							}
 						} catch (e) { /* no-op */ }
@@ -2088,14 +2097,41 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 	function publishMessageFromWidget(message) {
-		if (typeof publishMessage === 'function') {
-			const originalInput = document.getElementById('message');
-			const originalValue = originalInput.value;
-			originalInput.value = message;
-			publishMessage();
-			originalInput.value = originalValue;
-		} else {
-			console.log('Publishing message:', message);
+		try {
+			const cli = window.mqttClient;
+			const cid = window.mqttClientId;
+			if (!cli || !cid) {
+				console.warn('MQTT client not ready; falling back to console');
+				return console.log('Publishing message:', message);
+			}
+			// keep short history (last 6 entries)
+			const hist = Array.isArray(window.conversationHistory) ? window.conversationHistory.slice(-6) : [];
+			const payload = {
+				category: 'question',
+				cat_value: message,
+				history: hist,
+				client_id: cid
+			};
+			cli.publish("v000/c00002/d001/user", JSON.stringify(payload), (err) => {
+				if (err) console.error('Publish error:', err);
+			});
+			// push user message into history and trim
+			if (Array.isArray(window.conversationHistory)) {
+				window.conversationHistory.push({ role: 'user', content: message });
+				if (window.conversationHistory.length > 12) {
+					window.conversationHistory.splice(0, window.conversationHistory.length - 12);
+				}
+			}
+			// optional system feedback
+			const messagesList = document.getElementById('beeai-messages');
+			if (messagesList) {
+				const li = document.createElement('li');
+				li.className = 'system-message';
+				li.textContent = 'Vraag verstuurd… Antwoord volgt';
+				messagesList.appendChild(li);
+			}
+		} catch (e) {
+			console.error('Widget publish failed:', e);
 		}
 	}
 	window.updateConnectionStatus = function(isConnected) {
