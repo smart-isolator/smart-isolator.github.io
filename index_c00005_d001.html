@@ -677,19 +677,7 @@
 				</article>
 			</section>
  
-<!-- Zero -->
-			<section id="zero" class="wrapper style3">
-				<div class="inner">
-					<header class="align-center">
-					    <div id="bee-advice-container" class="bee-advice-container" style="display:none;">
-					        <img src="images/bee.png" alt="Bee" class="bee-advice-img" />
-					        <div class="bee-advice-bubble" id="bee-advice-text">De bij werkt aan een update...</div>
-					    </div>
-					</header>
-				</div>
-			</section>
- 
-
+<!-- Zero removed: advice handled in BeeAI widget -->
 <!-- Informatie Section -->
 <section id="informatie" class="wrapper style2">
   <div class="inner">
@@ -1853,6 +1841,15 @@ updateDroplet();
 	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
 	animation: slideIn 0.3s forwards;
 }
+.beeai-widget-container.beeai-small {
+	width: 50vw;
+	height: 50vh;
+	min-height: 320px;
+}
+.beeai-widget-container.beeai-large {
+	width: min(90vw, 480px);
+	height: 75vh;
+}
 .beeai-widget-header {
 	background: linear-gradient(135deg, #4CAF50, #45a049);
 	color: white;
@@ -2038,6 +2035,15 @@ updateDroplet();
 		max-height: 92vh;
 		min-height: 60vh;
 	}
+	.beeai-widget-container.beeai-small {
+		width: calc(100vw - 80px);
+		height: 55vh;
+		min-height: 50vh;
+	}
+	.beeai-widget-container.beeai-large {
+		width: calc(100vw - 24px);
+		height: 85vh;
+	}
 }
 </style>
 <script>
@@ -2052,13 +2058,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	const statusElement = document.getElementById('beeai-status');
 	const notification = document.getElementById('beeai-notification');
 	let beeAdviceText = document.getElementById('bee-advice-text-widget');
+	const container = widget.querySelector('.beeai-widget-container');
+	const hasInteracted = localStorage.getItem('beeaiUserInteracted') === '1';
 	setTimeout(function() {
 		widget.classList.remove('minimized');
+		if (!hasInteracted) {
+			container.classList.add('beeai-small');
+			container.classList.remove('beeai-large');
+		} else {
+			container.classList.add('beeai-large');
+			container.classList.remove('beeai-small');
+		}
 		widgetIcon.style.animation = 'bounce 1s';
 	}, 2000);
 	widgetIcon.addEventListener('click', function() {
 		widget.classList.remove('minimized');
 		notification.style.display = 'none';
+		container.classList.add('beeai-large');
+		container.classList.remove('beeai-small');
 	});
 	closeButton.addEventListener('click', function() {
 		widget.classList.add('minimized');
@@ -2066,6 +2083,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	function sendMessage() {
 		const message = messageInput.value.trim();
 		if (message) {
+			container.classList.add('beeai-large');
+			container.classList.remove('beeai-small');
+			localStorage.setItem('beeaiUserInteracted','1');
 			addMessage(message, 'user-message');
 			messageInput.value = '';
 			publishMessageFromWidget(message);

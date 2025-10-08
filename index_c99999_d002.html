@@ -582,8 +582,8 @@
 						<span id="honey-jar-details" style="display:block;"></span>
 					</button>
 					<nav class="main-nav">
-						<a href="index_c00003_d001.html" class="nav-link current">🏠 Home</a>
-						<a href="locaties.html?from=c00003_d001" class="nav-link">📍 Alle Locaties</a>
+						<a href="index_c99999_d002.html" class="nav-link current">🏠 Home</a>
+						<a href="locaties.html?from=c99999_d002" class="nav-link">📍 Alle Locaties</a>
 						<a href="bijen.html" class="nav-link">🐝 Bijen Info</a>
 						<a href="vegetatie.html" class="nav-link">🌿 Vegetatie</a>
 						<a href="information.html" class="nav-link">ℹ️ Informatie</a>
@@ -631,7 +631,7 @@
 		<!-- Banner Section -->
 			<section class="banner half">
 				<article>
-					<img id="banner-img-1" src="images/c00003_d001_1.jpg" alt="" />
+					<img id="banner-img-1" src="images/c99999_d002_1.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-1">Het bijenvolk</p>
@@ -640,7 +640,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-2" src="images/c00003_d001_2.jpg" alt="" />
+					<img id="banner-img-2" src="images/c99999_d002_2.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-2">Het bijenvolk</p>
@@ -649,7 +649,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-3" src="images/c00003_d001_3.jpg" alt="" />
+					<img id="banner-img-3" src="images/c99999_d002_3.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-3">Het bijenvolk</p>
@@ -658,7 +658,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-4" src="images/c00003_d001_4.jpg" alt="" />
+					<img id="banner-img-4" src="images/c99999_d002_4.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-4">Het bijenvolk</p>
@@ -667,7 +667,7 @@
 					</div>
 				</article>
 				<article>
-					<img id="banner-img-5" src="images/c00003_d001_5.jpg" alt="" />
+					<img id="banner-img-5" src="images/c99999_d002_5.jpg" alt="" />
 					<div class="inner">
 						<header>
 							<p id="banner-text-5">Het bijenvolk</p>
@@ -851,9 +851,9 @@
           dataType === 'co2' ? 'lower_co2' : 'lower_light_intensity'
         );
         const hiveIndex = headers.indexOf(
-          dataType === 'temperature' ? 'c00003_d001_temp_hive' : 
-          dataType === 'humidity' ? 'c00003_d001_humidity_hive' : 
-          dataType === 'co2' ? 'c00003_d001_co2' : 'c00003_d001_light_intensity'
+          dataType === 'temperature' ? 'c99999_d002_temp_hive' : 
+          dataType === 'humidity' ? 'c99999_d002_humidity_hive' : 
+          dataType === 'co2' ? 'c99999_d002_co2' : 'c99999_d002_light_intensity'
         );
 
         dataRows.forEach(row => {
@@ -1019,11 +1019,11 @@
 					} catch (e) { /* no-op */ }
 					console.log("Verbonden met de tussenman.");
 					// Subscribe to unique answer topic for this client
-					client.subscribe(`v000/c00003/d001/answer/${clientId}`,(err)=>{if(err)console.error("Subscribe error (answer):",err);});
+					client.subscribe(`v000/c99999/d002/answer/${clientId}`,(err)=>{if(err)console.error("Subscribe error (answer):",err);});
 					// Subscribe to insights topic and display advice with bee
-					client.subscribe("v000/c00003/d001/hive_summary",(err)=>{if(err)console.error("Subscribe error (hive_summary):",err);});
+					client.subscribe("v000/c99999/d002/hive_summary",(err)=>{if(err)console.error("Subscribe error (hive_summary):",err);});
 					// Subscribe to honey availability topic
-					client.subscribe("v000/c00003/d001/honey_availability",(err)=>{if(err)console.error("Subscribe error (honey_availability):",err);});
+					client.subscribe("v000/c99999/d002/honey_availability",(err)=>{if(err)console.error("Subscribe error (honey_availability):",err);});
 				});
 
 				client.on("message", (topic, message) => {
@@ -1031,7 +1031,7 @@
 					console.log(`Tijd van bericht is: ${messageTime}`);
 
 					// Bee advice/insights if topic matches, always display retained message
-					if (topic === "v000/c00003/d001/hive_summary") {
+					if (topic === "v000/c99999/d002/hive_summary") {
 					    const adviceContainer = document.getElementById("bee-advice-container");
 					    const adviceText = document.getElementById("bee-advice-text");
 					    adviceText.textContent = message.toString();
@@ -1048,7 +1048,7 @@
 					}
 
 					// Handle honey availability messages
-					if (topic === "v000/c00003/d001/honey_availability") {
+					if (topic === "v000/c99999/d002/honey_availability") {
         const btn = document.getElementById("honey-jar-btn");
         let data;
         try { data = JSON.parse(message.toString()); } catch (e) { btn.style.display = "none"; return; }
@@ -1074,7 +1074,7 @@
 					}
 
 					// Handle Q&A messages for the unique answer topic
-					if (topic === `v000/c00003/d001/answer/${clientId}`) {
+					if (topic === `v000/c99999/d002/answer/${clientId}`) {
 						if ((messageTime - connectionTime) < 2000) {
 							console.log("Bericht is van een eerder gesprek. Negeer het!");
 							return;
@@ -1270,7 +1270,7 @@
 				          order.city = city;
 				        }
 				        order.weight = weight;
-				        client.publish('v000/c00003/d001/honey_order', JSON.stringify(order), (err) => {
+				        client.publish('v000/c99999/d002/honey_order', JSON.stringify(order), (err) => {
 				          if (err) {
 				            honeyConfirm.textContent = 'Er is een fout opgetreden bij het versturen van uw bestelling. Probeer het later opnieuw.';
 				            honeyConfirm.style.color = '#e53935';
@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  var hiveId = 'c00003_d001';
+  var hiveId = 'c99999_d002';
   var jsonUrl = 'https://smart-isolator.github.io/hive_info/' + hiveId + '.json?t=' + Date.now();
   
   console.log('=== LOADING JSON DATA ===');
@@ -1498,7 +1498,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 async function updateThermometer() {
-  const hiveId = "c00003_d001_temp_hive"; // Replace with your value
+  const hiveId = "c99999_d002_temp_hive"; // Replace with your value
   const csvUrl = "hive_data.csv";
 
   // --- Settings ---
@@ -1610,7 +1610,7 @@ updateThermometer();
 
 <script>
 async function updateDroplet() {
-  const hiveId = "c00003_d001_humidity_hive"; // Replace with your value
+  const hiveId = "c99999_d002_humidity_hive"; // Replace with your value
   const csvUrl = "hive_data.csv";
 
   // --- Settings ---
@@ -2132,7 +2132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				history: hist,
 				client_id: cid
 			};
-			cli.publish("v000/c00003/d001/user", JSON.stringify(payload), (err) => {
+			cli.publish("v000/c99999/d002/user", JSON.stringify(payload), (err) => {
 				if (err) console.error('Publish error:', err);
 			});
 			// push user message into history and trim
