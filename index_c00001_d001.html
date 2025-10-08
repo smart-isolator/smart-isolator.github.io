@@ -1801,5 +1801,359 @@ updateDroplet();
 })();
 </script>
 
-	</body>
+</body>
+<!-- BeeAI Chat Widget -->
+<div id="beeai-widget" class="beeai-widget minimized">
+	<div class="beeai-widget-icon" id="beeai-widget-icon">
+		<img src="images/bee.png" alt="BeeAI" />
+		<span class="beeai-notification" id="beeai-notification" style="display:none;">1</span>
+	</div>
+	<div class="beeai-widget-container">
+		<div class="beeai-widget-header">
+			<div class="beeai-widget-title">
+				<img src="images/bee.png" alt="BeeAI" class="beeai-widget-title-icon" />
+				<span>BeeAI Assistent</span>
+			</div>
+			<button class="beeai-widget-close" id="beeai-widget-close">✕</button>
+		</div>
+		<div class="beeai-widget-content">
+			<div id="bee-advice-container-widget" class="bee-advice-container-widget">
+				<img src="images/bee.png" alt="Bee" class="bee-advice-img" />
+				<div class="bee-advice-bubble" id="bee-advice-text-widget">
+					Hallo! Ik ben BeeAI, de assistent van deze bijenkast. Ik kan je vertellen hoe het met de bijen gaat of je vragen beantwoorden. Wat wil je weten?
+				</div>
+			</div>
+			<div class="beeai-messages-container" id="beeai-messages-container">
+				<ul id="beeai-messages"></ul>
+			</div>
+			<div class="beeai-connection-status">
+				<span><strong>Status:</strong> <span id="beeai-status">Verbinden...</span></span>
+			</div>
+		</div>
+		<div class="beeai-widget-input">
+			<input type="text" id="beeai-message" placeholder="Stel een vraag aan het bijenvolk..." />
+			<button id="beeai-send-button">
+				<svg viewBox="0 0 24 24" width="24" height="24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+			</button>
+		</div>
+		<div class="beeai-widget-disclaimer">
+			<small>Uw vraag wordt doorgestuurd naar een AI-model. Vermijd persoonlijke gegevens.</small>
+		</div>
+	</div>
+</div>
+<style>
+.beeai-widget {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 9999;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	transition: all 0.3s ease;
+}
+.beeai-widget.minimized .beeai-widget-container {
+	display: none;
+}
+.beeai-widget-icon {
+	background: #4CAF50;
+	border-radius: 50%;
+	width: 60px;
+	height: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	transition: transform 0.2s ease;
+	position: relative;
+}
+.beeai-widget-icon:hover {
+	transform: scale(1.05);
+}
+.beeai-widget-icon img {
+	width: 40px;
+	height: 40px;
+	animation: beeFloat 2s infinite alternate ease-in-out;
+}
+.beeai-notification {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	background: #FF5722;
+	color: white;
+	border-radius: 50%;
+	width: 22px;
+	height: 22px;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.beeai-widget-container {
+	width: 350px;
+	height: 450px;
+	background: white;
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+	animation: slideIn 0.3s forwards;
+}
+.beeai-widget-header {
+	background: linear-gradient(135deg, #4CAF50, #45a049);
+	color: white;
+	padding: 12px 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.beeai-widget-title {
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+	font-size: 16px;
+}
+.beeai-widget-title-icon {
+	width: 20px;
+	height: 20px;
+	margin-right: 8px;
+}
+.beeai-widget-close {
+	background: none;
+	border: none;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	transition: background-color 0.2s;
+}
+.beeai-widget-close:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+.beeai-widget-content {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	padding: 15px;
+	background: #f5f8fa;
+}
+.bee-advice-container-widget {
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 15px;
+}
+.bee-advice-container-widget .bee-advice-img {
+	width: 35px;
+	height: 35px;
+	margin-right: 10px;
+	animation: beeFloat 2s infinite alternate ease-in-out;
+}
+.bee-advice-container-widget .bee-advice-bubble {
+	background-color: #e9f5fe;
+	border-radius: 18px;
+	padding: 10px 15px;
+	max-width: 80%;
+	position: relative;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.bee-advice-container-widget .bee-advice-bubble:before {
+	content: '';
+	position: absolute;
+	left: -8px;
+	top: 10px;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+	border-right: 8px solid #e9f5fe;
+}
+.beeai-messages-container {
+	flex: 1;
+	overflow-y: auto;
+	padding-right: 5px;
+}
+.beeai-messages-container ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+.beeai-messages-container li {
+	margin-bottom: 10px;
+	padding: 10px 15px;
+	border-radius: 18px;
+	max-width: 80%;
+	position: relative;
+	clear: both;
+}
+.beeai-messages-container li.user-message {
+	background-color: #4CAF50;
+	color: white;
+	float: right;
+	text-align: right;
+	border-bottom-right-radius: 0;
+}
+.beeai-messages-container li.bot-message {
+	background-color: #e9f5fe;
+	color: #333;
+	float: left;
+	border-bottom-left-radius: 0;
+}
+.beeai-messages-container li.system-message {
+	background-color: #f1f1f1;
+	color: #666;
+	text-align: center;
+	max-width: 90%;
+	margin: 10px auto;
+	font-style: italic;
+	font-size: 0.9em;
+}
+.beeai-connection-status {
+	font-size: 12px;
+	color: #666;
+	margin-top: 10px;
+}
+.beeai-widget-input {
+	display: flex;
+	background: white;
+	border-top: 1px solid #e6e6e6;
+	padding: 10px 15px;
+}
+.beeai-widget-input input {
+	flex: 1;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	padding: 8px 15px;
+	font-size: 14px;
+	outline: none;
+}
+.beeai-widget-input input:focus {
+	border-color: #4CAF50;
+}
+.beeai-widget-input button {
+	background: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	margin-left: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+.beeai-widget-input button:hover {
+	background: #45a049;
+}
+.beeai-widget-input button svg {
+	fill: white;
+}
+.beeai-widget-disclaimer {
+	padding: 8px 15px;
+	background: #f8f8f8;
+	border-top: 1px solid #e6e6e6;
+	font-size: 11px;
+	color: #666;
+	text-align: center;
+}
+@keyframes beeFloat {
+	0% { transform: translateY(0); }
+	100% { transform: translateY(-5px); }
+}
+@keyframes slideIn {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bounce {
+	0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+	40% { transform: translateY(-8px); }
+	60% { transform: translateY(-5px); }
+}
+@media (max-width: 480px) {
+	.beeai-widget-container { width: calc(100vw - 40px); height: 400px; }
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const widget = document.getElementById('beeai-widget');
+	const widgetIcon = document.getElementById('beeai-widget-icon');
+	const closeButton = document.getElementById('beeai-widget-close');
+	const messageInput = document.getElementById('beeai-message');
+	const sendButton = document.getElementById('beeai-send-button');
+	const messagesContainer = document.getElementById('beeai-messages-container');
+	const messagesList = document.getElementById('beeai-messages');
+	const statusElement = document.getElementById('beeai-status');
+	const notification = document.getElementById('beeai-notification');
+	let beeAdviceText = document.getElementById('bee-advice-text-widget');
+	setTimeout(function() {
+		widget.classList.remove('minimized');
+		widgetIcon.style.animation = 'bounce 1s';
+	}, 2000);
+	widgetIcon.addEventListener('click', function() {
+		widget.classList.remove('minimized');
+		notification.style.display = 'none';
+	});
+	closeButton.addEventListener('click', function() {
+		widget.classList.add('minimized');
+	});
+	function sendMessage() {
+		const message = messageInput.value.trim();
+		if (message) {
+			addMessage(message, 'user-message');
+			messageInput.value = '';
+			publishMessageFromWidget(message);
+			scrollToBottom();
+		}
+	}
+	sendButton.addEventListener('click', sendMessage);
+	messageInput.addEventListener('keypress', function(e) {
+		if (e.key === 'Enter') { sendMessage(); }
+	});
+	function addMessage(text, type) {
+		const li = document.createElement('li');
+		li.className = type;
+		li.textContent = text;
+		messagesList.appendChild(li);
+		scrollToBottom();
+	}
+	function scrollToBottom() {
+		messagesContainer.scrollTop = messagesContainer.scrollHeight;
+	}
+	window.handleIncomingMessage = function(topic, message) {
+		if (topic === 'v001/hive/advice') {
+			if (beeAdviceText) { beeAdviceText.textContent = message; }
+			if (widget.classList.contains('minimized')) { notification.style.display = 'flex'; }
+		}
+		if (topic === 'your/chat/topic') {
+			addMessage(message, 'bot-message');
+			if (widget.classList.contains('minimized')) { notification.style.display = 'flex'; }
+		}
+	}
+	function publishMessageFromWidget(message) {
+		if (typeof publishMessage === 'function') {
+			const originalInput = document.getElementById('message');
+			const originalValue = originalInput.value;
+			originalInput.value = message;
+			publishMessage();
+			originalInput.value = originalValue;
+		} else {
+			console.log('Publishing message:', message);
+		}
+	}
+	window.updateConnectionStatus = function(isConnected) {
+		if (statusElement) {
+			statusElement.textContent = isConnected ? 'Verbonden' : 'Verbinden...';
+			statusElement.style.color = isConnected ? '#4CAF50' : '#FF9800';
+		}
+	}
+});
+</script>
 </html>
